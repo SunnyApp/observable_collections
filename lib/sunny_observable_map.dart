@@ -80,8 +80,9 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
 
   final List<VoidCallback> _disposers = [];
 
-  dispose() {
+  Future dispose() async {
     _disposers.forEach((fn) => fn());
+    await [_subscribedTo?.cancel(), changeController.close()].awaitAll();
   }
 
   addDisposer(VoidCallback dispose) {
@@ -293,7 +294,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     }
     this.subscribedTo = _stream.where((_) => _ != null).asyncMap((replacement) {
       return this.sync(replacement);
-    }).listen((_) {});
+    }).listen((_) {}, cancelOnError: false);
   }
 
   FutureOr<V> getOrPut(K key, FutureOr<V> factory(K id)) {

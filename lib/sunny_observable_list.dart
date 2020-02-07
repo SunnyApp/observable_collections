@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:collection_diff/collection_diff.dart';
+import 'package:collection_diff/diff_algorithm.dart';
 import 'package:collection_diff/list_diff_model.dart';
 import 'package:collection_diff_isolate/collection_diff_isolate.dart';
 import 'package:flutter/foundation.dart';
@@ -11,18 +12,22 @@ import 'package:sunny_dart/sunny_dart.dart';
 /// Extension of [ObservableList] that supports syncing internal items from an external list.  When dart 2.6 comes
 /// out, this can move to an extension function
 class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Disposable {
-  SunnyObservableList.of(Iterable<V> map, {this.diffEquality = const DiffEquality(), String debugLabel})
+  SunnyObservableList.of(Iterable<V> map,
+      {this.diffAlgorithm, this.diffEquality = const DiffEquality(), String debugLabel})
       : assert(diffEquality != null),
         debugLabel = debugLabel ?? "List<$V>",
         super.of(map);
 
-  SunnyObservableList({this.diffEquality = const DiffEquality(), String debugLabel})
+  SunnyObservableList({this.diffAlgorithm, this.diffEquality = const DiffEquality(), String debugLabel})
       : assert(diffEquality != null),
         debugLabel = debugLabel ?? "List<$V>",
         super();
 
   SunnyObservableList.ofStream(Stream<Iterable<V>> stream,
-      {@required FutureOr<Iterable<V>> start, this.diffEquality = const DiffEquality(), String debugLabel})
+      {@required FutureOr<Iterable<V>> start,
+      this.diffAlgorithm,
+      this.diffEquality = const DiffEquality(),
+      String debugLabel})
       : assert(diffEquality != null),
         debugLabel = debugLabel ?? "stream[${V.simpleName}]",
         super() {
@@ -72,6 +77,7 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
   String debugLabel;
 
   DiffEquality<V> diffEquality;
+  ListDiffAlgorithm diffAlgorithm;
 
   StreamController<ListDiffs<V>> _changes = StreamController.broadcast();
 
@@ -94,6 +100,7 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
   dispose() {
     disposers.forEach((fn) => fn());
     disposers.clear();
+    _changes.close();
   }
 
   /// Syncs the values of this list with a replacement list, and emits modification events in the form of
@@ -102,7 +109,8 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
     final _items = this;
     final newItems = await newItemsFuture;
 
-    ListDiffs<V> diff = await _items.differencesAsync([...newItems], equality: diffEquality, debugName: debugLabel);
+    ListDiffs<V> diff = await _items.differencesAsync([...newItems],
+        algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers, equality: diffEquality, debugName: debugLabel);
 
     /// Apply patches may do some modification
     applyPatches(diff);
