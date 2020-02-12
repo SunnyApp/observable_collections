@@ -105,12 +105,18 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
 
   /// Syncs the values of this list with a replacement list, and emits modification events in the form of
   /// [ListChange]
-  Future<ListDiffs<V>> sync(FutureOr<Iterable<V>> newItemsFuture) async {
+  Future<ListDiffs<V>> sync(FutureOr<Iterable<V>> newItemsFuture, {bool async = true}) async {
     final _items = this;
     final newItems = await newItemsFuture;
 
-    ListDiffs<V> diff = await _items.differencesAsync([...newItems],
-        algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers, equality: diffEquality, debugName: debugLabel);
+    ListDiffs<V> diff;
+    if (async) {
+      diff = await _items.differencesAsync([...newItems],
+          algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers, equality: diffEquality, debugName: debugLabel);
+    } else {
+      diff = _items
+          .differences([...newItems], algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers, equality: diffEquality);
+    }
 
     /// Apply patches may do some modification
     applyPatches(diff);
