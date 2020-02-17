@@ -12,11 +12,20 @@ extension ValueStreamIterable_ObservableExtension<X> on ValueStream<Iterable<X>>
 }
 
 extension SunnyObservableMapExtension<K, V> on SunnyObservableMap<K, V> {
-  SunnyObservableMap<KK, VV> mapObserved<KK, VV>(MapEntry<KK, VV> mapper(K key, V value),
+  SunnyObservableMap<KK, VV> mapEntriesObserved<KK, VV>(MapEntry<KK, VV> mapper(K key, V value),
       {String debugLabel, DiffEquality<VV> valueEquality}) {
     return SunnyObservableMap<KK, VV>.ofStream(
       this.map(mapper),
       this.changeStream.map((changes) => changes.replacement.map(mapper)),
+      diffEquality: valueEquality,
+    );
+  }
+
+  SunnyObservableMap<KK, VV> mapObserved<KK, VV>(Map<KK, VV> mapper(Map<K, V> current),
+      {String debugLabel, DiffEquality<VV> valueEquality}) {
+    return SunnyObservableMap<KK, VV>.ofStream(
+      mapper({...this}),
+      this.changeStream.map((changes) => mapper(changes.replacement)),
       diffEquality: valueEquality,
     );
   }
