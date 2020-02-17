@@ -147,14 +147,28 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     return ValueStream.of({...values}, _values);
   }
 
-  Future<MapDiffs<K, V>> sync(FutureOr<Map<K, V>> newMap) async {
+  Future<MapDiffs<K, V>> sync(FutureOr<Map<K, V>> newMap, {bool async = true}) async {
     final nm = await newMap;
 
     try {
-      final changes =
-          await this.differencesAsync(nm, checkValues: true, debugName: debugLabel, valueEquality: _diffEquality);
-      applyChanges(changes);
-      return changes;
+      if (async) {
+        final changes = await this.differencesAsync(
+          nm,
+          checkValues: true,
+          debugName: debugLabel,
+          valueEquality: _diffEquality,
+        );
+        applyChanges(changes);
+        return changes;
+      } else {
+        final changes = this.differences(
+          nm,
+          checkValues: true,
+          valueEquality: _diffEquality,
+        );
+        applyChanges(changes);
+        return changes;
+      }
     } catch (e, stack) {
       // ignore: unnecessary_brace_in_string_interps
       log.severe("has issues syncing ${nm.length} records: $e", e, stack);
