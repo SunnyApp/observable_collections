@@ -126,7 +126,11 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
   void applyPatches(ListDiffs<V> diffs) {
     try {
       diffs.forEach(applyPatch);
-      _changes.add(diffs);
+      if (!_changes.isClosed) {
+        _changes.add(diffs);
+      } else {
+        log.warning("Not propagating $diffs because the broadcast stream has closed");
+      }
     } catch (e, stack) {
       log.severe("Error updating state for $debugLabel: $e", e, stack);
       rethrow;
