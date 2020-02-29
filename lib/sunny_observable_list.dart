@@ -111,11 +111,18 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
 
     ListDiffs<V> diff;
     if (async) {
-      diff = await _items.differencesAsync([...newItems],
-          algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers, equality: diffEquality, debugName: debugLabel);
+      diff = await _items.differencesAsync(
+        [...newItems],
+        algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers,
+        equality: diffEquality,
+        debugName: debugLabel,
+      );
     } else {
-      diff = _items
-          .differences([...newItems], algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers, equality: diffEquality);
+      diff = _items.differences(
+        [...newItems],
+        algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers,
+        equality: diffEquality,
+      );
     }
 
     /// Apply patches may do some modification

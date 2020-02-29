@@ -345,8 +345,10 @@ class SunnyObservableMapList<K, L> extends SunnyObservableMap<K, SunnyObservable
   SunnyObservableList<L> operator [](Object key) {
     final k = key as K;
     return putIfAbsent(k, () {
-      final list = SunnyObservableList<L>(debugLabel: "$debugLabel[$key]");
+      final list =
+          SunnyObservableList<L>(debugLabel: "$debugLabel[$key]", diffEquality: listDiffDelegator ?? DiffEquality());
       addDisposer(list.changeStream.listen((changes) {
+        _log.fine("Found change to mapList - ${changes.length}");
         changeController.add(newBuilder()..change(k, list));
       }).cancel);
       return list;
@@ -376,16 +378,20 @@ class SunnyObservableMapList<K, L> extends SunnyObservableMap<K, SunnyObservable
     await replacement.entries.map((e) async {
       _log.fine("sync: key=$e count${e.value.length}");
       final childThreads = this[e.key];
-      await childThreads.sync(e.value);
+      await childThreads.sync(e.value ?? []);
     }).awaitAll();
   }
 
   Future<SunnyObservableMap<K, SunnyObservableList<L>>> syncFromMapList(
       ValueStream<Map<K, List<L>>> replacement) async {
-    final first = await replacement.get();
-    await takeFromMapList(first);
+    final first = replacement.get();
+    if (first is! Future) {
+      await takeFromMapList(first as Map<K, Iterable<L>>);
+    } else {
+      _log.fine("Dropping initial future");
+    }
 
-    this.subscribedTo = replacement.listen(takeFromMapList);
+    this.subscribedTo = replacement.flatten().listen(takeFromMapList);
     return this;
   }
 }
