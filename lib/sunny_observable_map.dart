@@ -387,11 +387,13 @@ class SunnyObservableMapList<K, L> extends SunnyObservableMap<K, SunnyObservable
     final first = replacement.get();
     if (first is! Future) {
       await takeFromMapList(first as Map<K, Iterable<L>>);
+      this.subscribedTo = replacement.after.listen(takeFromMapList, cancelOnError: false);
     } else {
-      _log.fine("Dropping initial future");
+      final _first = await first;
+      await takeFromMapList(_first);
+      this.subscribedTo = replacement.after.listen(takeFromMapList, cancelOnError: false);
     }
 
-    this.subscribedTo = replacement.flatten().listen(takeFromMapList);
     return this;
   }
 }
