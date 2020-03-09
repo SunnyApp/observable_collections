@@ -32,15 +32,15 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
         debugLabel = debugLabel ?? "stream[${V.simpleName}]",
         super() {
     this.sync(start).then((_) {
-      final subscription = stream.listen(
-        (newList) {
-          try {
-            log.fine("got sync event from upstream with ${newList.length} records");
-            this.sync(newList);
-          } catch (e) {
-            print(e);
-          }
-        },
+      final subscription = stream.asyncMap((newList) {
+        try {
+          log.fine("got sync event from upstream with ${newList.length} records");
+          this.sync(newList);
+        } catch (e) {
+          print(e);
+        }
+      }).listen(
+        (_) {},
         cancelOnError: false,
       );
       disposers.add(subscription.cancel);
@@ -70,6 +70,14 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
   @override
   String toString() {
     return 'SunnyObservableList{$debugLabel}';
+  }
+
+  void subscribeTo(Stream<Iterable<V>> other, {bool sync = false}) {
+    disposers.add(other.asyncMap((items) async {
+      await this.sync(items, async: sync != true);
+    }).listen((_) {
+      // nothing to do
+    }, cancelOnError: false).cancel);
   }
 
   String get loggerName => debugLabel ?? super.loggerName;

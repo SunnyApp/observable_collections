@@ -180,13 +180,23 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     for (final change in changes) {
       switch (change.type) {
         case MapDiffType.set:
-          super[change.key] = change.value;
+          if (change.value == null) {
+            super.remove(change.key);
+          } else {
+            super[change.key] = change.value;
+          }
           break;
         case MapDiffType.unset:
           super.remove(change.key);
           break;
         case MapDiffType.change:
-          super[change.key] = change.value;
+          //ericm I felt like we should be removing when null, not setting to null
+
+          if (change.value == null) {
+            super.remove(change.key);
+          } else {
+            super[change.key] = change.value;
+          }
           break;
       }
     }
