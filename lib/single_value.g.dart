@@ -16,28 +16,26 @@ mixin _$SingleValue<T> on SingleValueBase<T>, Store {
   Computed<bool> _$isNullComputed;
 
   @override
-  bool get isNull =>
-      (_$isNullComputed ??= Computed<bool>(() => super.isNull)).value;
+  bool get isNull => (_$isNullComputed ??= Computed<bool>(() => super.isNull)).value;
 
   final _$_trackedAtom = Atom(name: 'SingleValueBase._tracked');
 
   @override
-  TrackedValue<T> get _tracked {
+  TrackedValue<T> get internalTracked {
     _$_trackedAtom.context.enforceReadPolicy(_$_trackedAtom);
     _$_trackedAtom.reportObserved();
-    return super._tracked;
+    return super.internalTracked;
   }
 
   @override
-  set _tracked(TrackedValue<T> value) {
+  set internalTracked(TrackedValue<T> value) {
     _$_trackedAtom.context.conditionallyRunInAction(() {
-      super._tracked = value;
+      super.internalTracked = value;
       _$_trackedAtom.reportChanged();
     }, _$_trackedAtom, name: '${_$_trackedAtom.name}_set');
   }
 
-  final _$SingleValueBaseActionController =
-      ActionController(name: 'SingleValueBase');
+  final _$SingleValueBaseActionController = ActionController(name: 'SingleValueBase');
 
   @override
   dynamic update(T value, {bool force = false}) {
@@ -78,8 +76,7 @@ mixin _$ProgressTracker on ProgressTrackerBase, Store {
     }, _$taskAtom, name: '${_$taskAtom.name}_set');
   }
 
-  final _$ProgressTrackerBaseActionController =
-      ActionController(name: 'ProgressTrackerBase');
+  final _$ProgressTrackerBaseActionController = ActionController(name: 'ProgressTrackerBase');
 
   @override
   dynamic finishTask(double progress, {String newTask}) {

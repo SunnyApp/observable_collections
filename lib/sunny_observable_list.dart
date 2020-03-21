@@ -84,7 +84,7 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
 
   String debugLabel;
 
-  DiffEquality<V> diffEquality;
+  DiffEquality diffEquality;
   ListDiffAlgorithm diffAlgorithm;
 
   StreamController<ListDiffs<V>> _changes = StreamController.broadcast();

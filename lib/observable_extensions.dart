@@ -6,14 +6,14 @@ import 'sunny_observable_list.dart';
 import 'sunny_observable_map.dart';
 
 extension ValueStreamIterable_ObservableExtension<X> on ValueStream<Iterable<X>> {
-  SunnyObservableList<X> observeList([String debugLabel, DiffEquality<X> diffEquality = const DiffEquality()]) {
+  SunnyObservableList<X> observeList([String debugLabel, DiffEquality diffEquality = const DiffEquality()]) {
     return SunnyObservableList.ofVStream(this, diffEquality: diffEquality, debugLabel: debugLabel);
   }
 }
 
 extension SunnyObservableMapExtension<K, V> on SunnyObservableMap<K, V> {
   SunnyObservableMap<KK, VV> mapEntriesObserved<KK, VV>(MapEntry<KK, VV> mapper(K key, V value),
-      {String debugLabel, DiffEquality<VV> valueEquality}) {
+      {String debugLabel, DiffEquality valueEquality}) {
     return SunnyObservableMap<KK, VV>.ofStream(
       this.map(mapper),
       this.changeStream.map((changes) => changes.replacement.map(mapper)),
@@ -22,7 +22,7 @@ extension SunnyObservableMapExtension<K, V> on SunnyObservableMap<K, V> {
   }
 
   SunnyObservableMap<KK, VV> mapObserved<KK, VV>(Map<KK, VV> mapper(Map<K, V> current),
-      {String debugLabel, DiffEquality<VV> valueEquality}) {
+      {String debugLabel, DiffEquality valueEquality}) {
     return SunnyObservableMap<KK, VV>.ofStream(
       mapper({...this}),
       this.changeStream.map((changes) => mapper(changes.replacement)),
@@ -32,7 +32,7 @@ extension SunnyObservableMapExtension<K, V> on SunnyObservableMap<K, V> {
 }
 
 extension ValueStreamFutureIterableExtensions<X> on ValueStream<Future<Iterable<X>>> {
-  SunnyObservableList<X> observeListSampled([String debugLabel, DiffEquality<X> diffDelegator]) {
+  SunnyObservableList<X> observeListSampled([String debugLabel, DiffEquality diffDelegator]) {
     return SunnyObservableList<X>.ofVStream(this.sampled(), debugLabel: debugLabel, diffEquality: diffDelegator);
   }
 
@@ -45,7 +45,7 @@ extension ValueStreamFutureIterableExtensions<X> on ValueStream<Future<Iterable<
 }
 
 extension ValueStreamOfMapExtensions<K, V> on ValueStream<Map<K, V>> {
-  SunnyObservableMap<K, V> observe([String debugLabel, DiffEquality<V> diffEquality]) {
+  SunnyObservableMap<K, V> observe([String debugLabel, DiffEquality diffEquality]) {
     return SunnyObservableMap.ofVStream(
       this,
       debugLabel: debugLabel,
@@ -55,13 +55,13 @@ extension ValueStreamOfMapExtensions<K, V> on ValueStream<Map<K, V>> {
 }
 
 extension ValueStreamFutureMapListExtensions<K, L> on ValueStream<Future<Map<K, List<L>>>> {
-  SunnyObservableMapList<K, L> observeDeep([String debugLabel, DiffEquality<L> diffDelegator]) {
+  SunnyObservableMapList<K, L> observeDeep([String debugLabel, DiffEquality diffDelegator]) {
     return SunnyObservableMapList<K, L>(debugLabel, diffDelegator)..syncFromMapList(this.sampled());
   }
 }
 
 extension ValueStreamMapListExtensions<K, L> on ValueStream<Map<K, List<L>>> {
-  SunnyObservableMapList<K, L> observeDeep([String debugLabel, DiffEquality<L> diffDelegator]) {
+  SunnyObservableMapList<K, L> observeDeep([String debugLabel, DiffEquality diffDelegator]) {
     return SunnyObservableMapList<K, L>(debugLabel, diffDelegator)..syncFromMapList(this);
   }
 }

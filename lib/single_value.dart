@@ -39,7 +39,7 @@ typedef Mutator<T> = T Function(T input);
 
 abstract class SingleValueBase<T> with Disposable, Store {
   final log = Logger("singleValue");
-  SingleValueBase(T value, [this.name]) : _tracked = TrackedValue(value);
+  SingleValueBase(T value, [this.name]) : internalTracked = TrackedValue(value);
 
   /// A name - can be useful to generate a key based on tracking this value.  Not required
   String name;
@@ -47,32 +47,32 @@ abstract class SingleValueBase<T> with Disposable, Store {
   Key get key => name != null ? Key(name) : null;
 
   @observable
-  TrackedValue<T> _tracked;
+  TrackedValue<T> internalTracked;
 
   @action
   update(T value, {bool force = false}) {
-    this._tracked = this._tracked.updated(value, force: force);
+    this.internalTracked = this.internalTracked.updated(value, force: force);
   }
 
   @action
   FutureOr<T> modify(Mutator<T> mutator) {
-    final v = mutator(_tracked.tracked);
-    this._tracked = this._tracked.updated(v, force: true);
+    final v = mutator(internalTracked.tracked);
+    this.internalTracked = this.internalTracked.updated(v, force: true);
     return v;
   }
 
   @computed
-  T get value => _tracked.tracked;
+  T get value => internalTracked.tracked;
 
-  T get() => _tracked.tracked;
+  T get() => internalTracked.tracked;
 
   /// Whether or not the underlying value is null
   @computed
-  bool get isNull => _tracked.tracked == null;
+  bool get isNull => internalTracked.tracked == null;
 
   /// Would love extension functions for this
   ValueNotifier<T> toValueNotifier({bool sync = false}) {
-    final notifier = ValueNotifier<T>(_tracked.tracked);
+    final notifier = ValueNotifier<T>(internalTracked.tracked);
     syncToSingleValue(this as SingleValue<T>, notifier);
     if (sync) {
       syncToValueNotifier(notifier, this as SingleValue<T>);

@@ -31,30 +31,30 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
   /// This doesn't affect the keys in the map - rather it's used when doing list diffs of the
   /// values in the map - to know whether one list item represents the _same_ list item (but with
   /// different values).  This is typically the primary key, but can be a different key or combination
-  final DiffEquality<V> _diffEquality;
+  final DiffEquality _diffEquality;
 
   @override
   String get loggerName => debugLabel ?? super.loggerName;
 
-  SunnyObservableMap.of(Map<K, V> map, {String debugLabel, DiffEquality<V> diffDelegator})
+  SunnyObservableMap.of(Map<K, V> map, {String debugLabel, DiffEquality diffDelegator})
       : _diffEquality = diffDelegator ?? DiffEquality(),
         debugLabel = debugLabel ?? "ObservableMap<$K, $V>",
         super.of(map) {
     _initialize();
   }
 
-  SunnyObservableMap({String debugLabel, DiffEquality<V> diffDelegator})
+  SunnyObservableMap({String debugLabel, DiffEquality diffDelegator})
       : this.of(<K, V>{}, debugLabel: debugLabel, diffDelegator: diffDelegator);
 
   SunnyObservableMap.ofStream(Map<K, V> initial, Stream<Map<K, V>> stream,
-      {this.debugLabel, DiffEquality<V> diffEquality})
+      {this.debugLabel, DiffEquality diffEquality})
       : _diffEquality = diffEquality ?? DiffEquality(),
         super.of(initial) {
     _initialize();
     syncAndListenFrom(stream, start: initial);
   }
 
-  SunnyObservableMap.ofVStream(ValueStream<Map<K, V>> stream, {this.debugLabel, DiffEquality<V> diffEquality})
+  SunnyObservableMap.ofVStream(ValueStream<Map<K, V>> stream, {this.debugLabel, DiffEquality diffEquality})
       : _diffEquality = diffEquality ?? DiffEquality(),
         super() {
     _initialize();
@@ -339,7 +339,7 @@ class SunnyObservableMapList<K, L> extends SunnyObservableMap<K, SunnyObservable
       : _log = Logger("mapList.$debugLabel"),
         super(debugLabel: debugLabel, diffDelegator: DiffEquality());
 
-  final DiffEquality<L> listDiffDelegator;
+  final DiffEquality listDiffDelegator;
   final Logger _log;
 
   @override
@@ -413,7 +413,7 @@ class SunnyObservableMapMap<K1, K, V> extends SunnyObservableMap<K1, SunnyObserv
       : log = Logger("mapMap[${debugLabel ?? '-'}"),
         super(debugLabel: debugLabel, diffDelegator: DiffEquality());
 
-  final DiffEquality<V> listDiffDelegator;
+  final DiffEquality listDiffDelegator;
 
   final Logger log;
 
