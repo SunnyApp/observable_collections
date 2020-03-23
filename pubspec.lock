@@ -88,17 +88,17 @@ packages:
   collection_diff:
     dependency: "direct main"
     description:
-      path: "../collection_diff"
-      relative: true
-    source: path
-    version: "0.4.4"
-  collection_diff_isolate:
+      name: collection_diff
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
+  collection_diff_worker:
     dependency: "direct main"
     description:
-      path: "../collection_diff_isolate"
-      relative: true
-    source: path
-    version: "0.4.4"
+      name: collection_diff_worker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.5"
   convert:
     dependency: transitive
     description:
@@ -127,13 +127,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.3"
+  device_info:
+    dependency: transitive
+    description:
+      name: device_info
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.2+1"
+  devicelocale:
+    dependency: transitive
+    description:
+      name: devicelocale
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.2"
   equatable:
     dependency: transitive
     description:
       name: equatable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.0.2"
   fixnum:
     dependency: transitive
     description:
@@ -221,13 +235,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.3"
-  isolate_service:
-    dependency: transitive
-    description:
-      path: "../isolate_service"
-      relative: true
-    source: path
-    version: "0.4.7"
   js:
     dependency: transitive
     description:
@@ -252,10 +259,10 @@ packages:
   logging_config:
     dependency: transitive
     description:
-      path: "../logging_config"
-      relative: true
-    source: path
-    version: "0.4.5"
+      name: logging_config
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.7"
   matcher:
     dependency: transitive
     description:
@@ -276,7 +283,7 @@ packages:
       name: mobx
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.2+2"
   mobx_codegen:
     dependency: "direct dev"
     description:
@@ -333,6 +340,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.0"
+  platform_detect:
+    dependency: transitive
+    description:
+      name: platform_detect
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.4.0"
   pub_semver:
     dependency: transitive
     description:
@@ -393,7 +407,7 @@ packages:
       name: stream_transform
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   string_scanner:
     dependency: transitive
     description:
@@ -404,9 +418,9 @@ packages:
   sunny_dart:
     dependency: "direct main"
     description:
-      path: "../sunny_dart"
-      relative: true
-    source: path
+      name: sunny_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.4.4"
   term_glyph:
     dependency: transitive
@@ -421,7 +435,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.15"
+    version: "0.2.11"
   timezone:
     dependency: transitive
     description:
@@ -471,6 +485,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.7+13"
+  worker_service:
+    dependency: transitive
+    description:
+      name: worker_service
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.2"
   xml:
     dependency: transitive
     description:
@@ -487,3 +508,4 @@ packages:
     version: "2.2.0"
 sdks:
   dart: ">=2.7.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

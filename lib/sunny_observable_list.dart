@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:collection_diff/collection_diff.dart';
 import 'package:collection_diff/diff_algorithm.dart';
 import 'package:collection_diff/list_diff_model.dart';
-import 'package:collection_diff_isolate/collection_diff_isolate.dart';
+import 'package:collection_diff_worker/collection_diff_worker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart' hide ObservableMap, ListChange;
 import 'package:sunny_dart/sunny_dart.dart';

@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:collection_diff/collection_diff.dart';
 import 'package:collection_diff/map_diff.dart';
-import 'package:collection_diff_isolate/collection_diff_isolate.dart';
+import 'package:collection_diff_worker/collection_diff_worker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:mobx/mobx.dart' hide ObservableMap, MapChange;
@@ -46,8 +46,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
   SunnyObservableMap({String debugLabel, DiffEquality diffDelegator})
       : this.of(<K, V>{}, debugLabel: debugLabel, diffDelegator: diffDelegator);
 
-  SunnyObservableMap.ofStream(Map<K, V> initial, Stream<Map<K, V>> stream,
-      {this.debugLabel, DiffEquality diffEquality})
+  SunnyObservableMap.ofStream(Map<K, V> initial, Stream<Map<K, V>> stream, {this.debugLabel, DiffEquality diffEquality})
       : _diffEquality = diffEquality ?? DiffEquality(),
         super.of(initial) {
     _initialize();
