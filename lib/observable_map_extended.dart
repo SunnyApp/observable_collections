@@ -58,7 +58,7 @@ class ObservableMap<K, V>
   }
 
   /// Forces an update, even in cases where the value at the [key] has not changed or is the same instance.
-  push(final Object key, V value) {
+  void push(final Object key, V value) {
     _context.conditionallyRunInAction(() {
       _reportUpdate(key as K, value, _map[key]);
       final oldValue = _map[key];

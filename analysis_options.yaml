@@ -1,0 +1,6 @@
+include: package:sunny_dart/analysis_options.yaml
+
+analyzer:
+  errors:
+    annotate_overrides: info
+    always_declare_return_types: info

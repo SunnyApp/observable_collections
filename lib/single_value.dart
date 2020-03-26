@@ -50,7 +50,7 @@ abstract class SingleValueBase<T> with Disposable, Store {
   TrackedValue<T> internalTracked;
 
   @action
-  update(T value, {bool force = false}) {
+  void update(T value, {bool force = false}) {
     this.internalTracked = this.internalTracked.updated(value, force: force);
   }
 
@@ -110,18 +110,18 @@ class StateCounter {
   Key get key => _counter.key;
 
   /// Keeps the public value in sync with an internal padded value.
-  _sync() {
+  void _sync() {
     _counter.update(math.max(_actual, _padded));
   }
 
-  increment([double amount]) {
+  void increment([double amount]) {
     _actual += (amount ?? 1);
     _sync();
   }
 
   /// Increments the value by a certain amount over a duration using an exponential backoff.
   /// Helps prevent large pauses while operations are / warming up.
-  predict(double amount, {Duration step}) async {
+  Future predict(double amount, {Duration step}) async {
     // We don't allow multiple pads to run
     print("Predicting $amount (target of ${_actual + amount})");
     double progress = amount;
@@ -152,28 +152,28 @@ class StateCounter {
     }
   }
 
-  updateRatio(double ratio) {
+  void updateRatio(double ratio) {
     assert(ratio >= 0 && ratio <= 1);
     _actual = 100.0 * ratio;
     _sync();
   }
 
-  update(double amount) {
+  void update(double amount) {
     _actual = amount;
     _sync();
   }
 
-  decrement() {
+  void decrement() {
     _actual -= 1.0;
     _sync();
   }
 
-  reset() {
+  void reset() {
     _actual = 0.0;
     _sync();
   }
 
-  set(double value) {
+  void set(double value) {
     _actual = value;
     _sync();
   }
@@ -202,7 +202,7 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
   double get total => _total;
 
   @action
-  finishTask(double progress, {String newTask}) {
+  void finishTask(double progress, {String newTask}) {
     this.update(progress);
     if (newTask != null) {
       this.task = newTask;
@@ -210,7 +210,7 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
   }
 
   @action
-  finishTaskRatio(double progress, {String newTask}) {
+  void finishTaskRatio(double progress, {String newTask}) {
     updateRatio(progress);
     if (newTask != null) {
       this.task = newTask;
@@ -218,7 +218,7 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
   }
 
   @action
-  updateTask(String newTask) {
+  void updateTask(String newTask) {
     this.task = newTask;
   }
 

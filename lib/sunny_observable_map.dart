@@ -60,7 +60,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     syncAndListenFrom(stream.after, start: stream.get());
   }
 
-  _initialize() {
+  void _initialize() {
     _keys = changeController.stream.map((changes) {
       return [...this.keys];
     });
@@ -84,7 +84,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     await [_subscribedTo?.cancel(), changeController.close()].awaitAll();
   }
 
-  addDisposer(VoidCallback dispose) {
+  void addDisposer(VoidCallback dispose) {
     if (dispose != null) {
       _disposers.add(dispose);
     }
@@ -234,7 +234,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
   }
 
   @override
-  push(Object key, V value) {
+  void push(Object key, V value) {
     _buildChanges((_) {
       _.change(key as K, value);
       super.push(key, value);
@@ -364,7 +364,7 @@ class SunnyObservableMapList<K, L> extends SunnyObservableMap<K, SunnyObservable
     });
   }
 
-  reset() async {
+  Future reset() async {
     for (final v in [...values]) {
       await v.sync([]);
       await v.dispose();
@@ -373,7 +373,7 @@ class SunnyObservableMapList<K, L> extends SunnyObservableMap<K, SunnyObservable
     [...keys].forEach((k) => removeQuiet(k));
   }
 
-  takeFromMapList(Map<K, Iterable<L>> replacement) async {
+  Future takeFromMapList(Map<K, Iterable<L>> replacement) async {
     _log.info(
         "sync: ${replacement.isEmpty ? 'empty' : replacement.entries.map((e) => "${e.key}=>${e.value.length}").join(", ")}");
     // Now, let's apply all the childThreads.  This will make sure to remove anything that needs removing, etc.
@@ -414,6 +414,7 @@ class SunnyObservableMapMap<K1, K, V> extends SunnyObservableMap<K1, SunnyObserv
 
   final DiffEquality listDiffDelegator;
 
+  @override
   final Logger log;
 
   @override

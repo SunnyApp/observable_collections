@@ -80,6 +80,7 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
     }, cancelOnError: false).cancel);
   }
 
+  @override
   String get loggerName => debugLabel ?? super.loggerName;
 
   String debugLabel;
@@ -99,16 +100,17 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
   /// Optional
   final List<VoidCallback> disposers = [];
 
-  registerDisposer(VoidCallback callback) {
+  @override
+  void registerDisposer(VoidCallback callback) {
     if (callback != null) {
       disposers.add(callback);
     }
   }
 
-  dispose() {
+  Future dispose() async {
     disposers.forEach((fn) => fn());
     disposers.clear();
-    _changes.close();
+    await _changes.close();
   }
 
   /// Syncs the values of this list with a replacement list, and emits modification events in the form of

@@ -421,7 +421,7 @@ packages:
       name: sunny_dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.4"
+    version: "0.5.6"
   term_glyph:
     dependency: transitive
     description:
@@ -435,7 +435,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.11"
+    version: "0.2.15"
   timezone:
     dependency: transitive
     description:
