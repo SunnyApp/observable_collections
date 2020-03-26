@@ -11,14 +11,20 @@ import 'package:sunny_dart/sunny_dart.dart';
 
 /// Extension of [ObservableList] that supports syncing internal items from an external list.  When dart 2.6 comes
 /// out, this can move to an extension function
-class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Disposable {
+class SunnyObservableList<V> extends ObservableList<V>
+    with LoggingMixin, Disposable {
   SunnyObservableList.of(Iterable<V> map,
-      {this.diffAlgorithm, this.diffEquality = const DiffEquality(), String debugLabel})
+      {this.diffAlgorithm,
+      this.diffEquality = const DiffEquality(),
+      String debugLabel})
       : assert(diffEquality != null),
         debugLabel = debugLabel ?? "List<$V>",
         super.of(map);
 
-  SunnyObservableList({this.diffAlgorithm, this.diffEquality = const DiffEquality(), String debugLabel})
+  SunnyObservableList(
+      {this.diffAlgorithm,
+      this.diffEquality = const DiffEquality(),
+      String debugLabel})
       : assert(diffEquality != null),
         debugLabel = debugLabel ?? "List<$V>",
         super();
@@ -34,7 +40,8 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
     this.sync(start).then((_) {
       final subscription = stream.asyncMap((newList) {
         try {
-          log.fine("got sync event from upstream with ${newList.length} records");
+          log.fine(
+              "got sync event from upstream with ${newList.length} records");
           this.sync(newList);
         } catch (e) {
           print(e);
@@ -56,7 +63,8 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
       final subscription = stream.listen(
         (newList) {
           try {
-            log.info("[$debugLabel] got sync event from upstream with ${newList.length} records");
+            log.info(
+                "[$debugLabel] got sync event from upstream with ${newList.length} records");
             this.sync(newList);
           } catch (e) {
             print(e);
@@ -95,7 +103,8 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
 //    return ValueStream.of(<V>[].differencesAsync(this), _changes.stream);
   }
 
-  ValueStream<Iterable<V>> get stream => ValueStream.of([...this], _changes.stream.map((changes) => changes.newList));
+  ValueStream<Iterable<V>> get stream => ValueStream.of(
+      [...this], _changes.stream.map((changes) => changes.newList));
 
   /// Optional
   final List<VoidCallback> disposers = [];
@@ -115,7 +124,8 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
 
   /// Syncs the values of this list with a replacement list, and emits modification events in the form of
   /// [ListChange]
-  Future<ListDiffs<V>> sync(FutureOr<Iterable<V>> newItemsFuture, {bool async = true}) async {
+  Future<ListDiffs<V>> sync(FutureOr<Iterable<V>> newItemsFuture,
+      {bool async = true}) async {
     final _items = this;
     final newItems = await newItemsFuture;
 
@@ -146,7 +156,8 @@ class SunnyObservableList<V> extends ObservableList<V> with LoggingMixin, Dispos
       if (!_changes.isClosed) {
         _changes.add(diffs);
       } else {
-        log.warning("Not propagating $diffs because the broadcast stream has closed");
+        log.warning(
+            "Not propagating $diffs because the broadcast stream has closed");
       }
     } catch (e, stack) {
       log.severe("Error updating state for $debugLabel: $e", e, stack);

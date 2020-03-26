@@ -25,7 +25,8 @@ part 'single_value.g.dart';
 class SingleValue<T> extends SingleValueBase<T> with _$SingleValue<T> {
   SingleValue(T value, [String name]) : super(value, name);
 
-  SingleValue.ofValueNotifier(ValueNotifier<T> notifier, {bool sync = false}) : super(notifier.value) {
+  SingleValue.ofValueNotifier(ValueNotifier<T> notifier, {bool sync = false})
+      : super(notifier.value) {
     syncToValueNotifier(notifier, this);
     if (sync) {
       syncToSingleValue(this, notifier);
@@ -81,11 +82,14 @@ abstract class SingleValueBase<T> with Disposable, Store {
   }
 }
 
-ReactionDisposer syncToSingleValue<T>(SingleValue<T> singleValue, ValueNotifier<T> notifier) {
-  return reaction((_) => singleValue.value, (newValue) => notifier.value = newValue as T);
+ReactionDisposer syncToSingleValue<T>(
+    SingleValue<T> singleValue, ValueNotifier<T> notifier) {
+  return reaction(
+      (_) => singleValue.value, (newValue) => notifier.value = newValue as T);
 }
 
-ListenerDisposer syncToValueNotifier<T>(ValueNotifier<T> notifier, SingleValue<T> singleValue) {
+ListenerDisposer syncToValueNotifier<T>(
+    ValueNotifier<T> notifier, SingleValue<T> singleValue) {
   final updater = () => singleValue.update(notifier.value);
   notifier.addListener(updater);
   return () => notifier.removeListener(updater);
@@ -133,13 +137,15 @@ class StateCounter {
         break;
       }
       if (progress <= 1) {
-        log.fine("Progress is less than 1: $progress towards our goal of $target");
+        log.fine(
+            "Progress is less than 1: $progress towards our goal of $target");
         break;
       }
 
       final p = math.min(3, math.max(0.3, progress / i));
       if (p < 0) {
-        log.fine("Reached the negatives? $p towards our progress $progress goal of $target");
+        log.fine(
+            "Reached the negatives? $p towards our progress $progress goal of $target");
         break;
       }
       progress -= p;
@@ -247,7 +253,8 @@ class TrackedValue<T> {
   final T tracked;
   final int timestamp;
 
-  TrackedValue(this.tracked, [int timestamp]) : timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
+  TrackedValue(this.tracked, [int timestamp])
+      : timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
   TrackedValue<T> updated(T value, {bool force = false}) {
     return TrackedValue(value, force == true ? null : this.timestamp);

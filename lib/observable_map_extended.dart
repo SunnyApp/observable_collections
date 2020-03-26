@@ -45,9 +45,11 @@ class ObservableMap<K, V>
 
   Listeners<MapChange<K, V>> _listenersField;
 
-  Listeners<MapChange<K, V>> get _listeners => _listenersField ??= Listeners(_context);
+  Listeners<MapChange<K, V>> get _listeners =>
+      _listenersField ??= Listeners(_context);
 
-  bool get _hasListeners => _listenersField != null && _listenersField.hasHandlers;
+  bool get _hasListeners =>
+      _listenersField != null && _listenersField.hasHandlers;
 
   @override
   V operator [](Object key) {
@@ -116,7 +118,8 @@ class ObservableMap<K, V>
   Iterable<K> get keys => MapKeysIterable(_map.keys, _atom);
 
   @override
-  Map<RK, RV> cast<RK, RV>() => ObservableMap._wrap(_context, super.cast(), _atom);
+  Map<RK, RV> cast<RK, RV>() =>
+      ObservableMap._wrap(_context, super.cast(), _atom);
 
   @override
   V remove(Object key) {
@@ -211,7 +214,8 @@ class ObservableMap<K, V>
   }
 }
 
-ObservableMap<K, V> wrapInObservableMap<K, V>(Atom atom, Map<K, V> map) => ObservableMap._wrap(mainContext, map, atom);
+ObservableMap<K, V> wrapInObservableMap<K, V>(Atom atom, Map<K, V> map) =>
+    ObservableMap._wrap(mainContext, map, atom);
 
 typedef MapChangeListener<K, V> = void Function(MapChange<K, V>);
 
