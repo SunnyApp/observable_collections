@@ -197,6 +197,8 @@ class ProgressTracker extends ProgressTrackerBase with _$ProgressTracker {
 }
 
 abstract class ProgressTrackerBase extends StateCounter with Store {
+  final _completer = SafeCompleter();
+
   /// The total number of units working towards.  For percent/ratio based tracking, this will be 100
   double _total = 0.0;
 
@@ -206,6 +208,16 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
 
   /// The total number of units working towards.  For percent/ratio based tracking, this will be 100
   double get total => _total;
+
+  Future get done => _completer.future;
+
+  @override
+  void update(double amount) {
+    if (amount >= _total) {
+      _completer.complete();
+    }
+    super.update(amount);
+  }
 
   @action
   void finishTask(double progress, {String newTask}) {
@@ -244,6 +256,7 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
 
   /// Marks this counter as complete
   void complete() {
+    _completer.complete();
     set(_total.toDouble());
   }
 }
