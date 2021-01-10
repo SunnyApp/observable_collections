@@ -1,13 +1,13 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:collection_diff/collection_diff.dart';
 import 'package:collection_diff/diff_algorithm.dart';
 import 'package:collection_diff/list_diff_model.dart';
 import 'package:collection_diff_worker/collection_diff_worker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart' hide ObservableMap, ListChange;
 import 'package:sunny_dart/sunny_dart.dart';
+
+import 'empty_callback.dart';
 
 /// Extension of [ObservableList] that supports syncing internal items from an external list.  When dart 2.6 comes
 /// out, this can move to an extension function
@@ -30,7 +30,7 @@ class SunnyObservableList<V> extends ObservableList<V>
         super();
 
   SunnyObservableList.ofStream(Stream<Iterable<V>> stream,
-      {@required FutureOr<Iterable<V>> start,
+      {FutureOr<Iterable<V>> start,
       this.diffAlgorithm,
       this.diffEquality = const DiffEquality(),
       String debugLabel})
@@ -107,10 +107,10 @@ class SunnyObservableList<V> extends ObservableList<V>
       [...this], _changes.stream.map((changes) => changes.newList));
 
   /// Optional
-  final List<VoidCallback> disposers = [];
+  final List<EmptyCallback> disposers = [];
 
   @override
-  void registerDisposer(VoidCallback callback) {
+  void registerDisposer(EmptyCallback callback) {
     if (callback != null) {
       disposers.add(callback);
     }
