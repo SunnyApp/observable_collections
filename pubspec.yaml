@@ -1,5 +1,5 @@
 name: observable_collections
-version: 0.6.1+3
+version: 0.6.1-nullsafety.4
 homepage: https://github.com/SunnyApp/observable_collections
 description: Collections that publish and track changes
 environment: 
@@ -13,7 +13,14 @@ dependencies:
   flutter: 
     sdk: flutter
 dev_dependencies: 
-  mobx_codegen: 
+  build_runner: any
+  build_resolvers: any
+  analyzer: any
+  build: any
+  source_span: any
+  dart_style: any
+  source_gen: any
+  mobx_codegen:
     git: 
       url: https://github.com/mobxjs/mobx.dart
       ref: null_safety
