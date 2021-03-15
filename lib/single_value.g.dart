@@ -6,42 +6,44 @@ part of 'single_value.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$SingleValue<T> on SingleValueBase<T>, Store {
-  Computed<T> _$valueComputed;
+  Computed<T>? _$valueComputed;
 
   @override
-  T get value => (_$valueComputed ??= Computed<T>(() => super.value)).value;
-  Computed<bool> _$isNullComputed;
+  T get value => (_$valueComputed ??=
+          Computed<T>(() => super.value, name: 'SingleValueBase.value'))
+      .value;
+  Computed<bool>? _$isNullComputed;
 
   @override
-  bool get isNull =>
-      (_$isNullComputed ??= Computed<bool>(() => super.isNull)).value;
+  bool get isNull => (_$isNullComputed ??=
+          Computed<bool>(() => super.isNull, name: 'SingleValueBase.isNull'))
+      .value;
 
-  final _$_trackedAtom = Atom(name: 'SingleValueBase._tracked');
+  final _$internalTrackedAtom = Atom(name: 'SingleValueBase.internalTracked');
 
   @override
   TrackedValue<T> get internalTracked {
-    _$_trackedAtom.context.enforceReadPolicy(_$_trackedAtom);
-    _$_trackedAtom.reportObserved();
+    _$internalTrackedAtom.reportRead();
     return super.internalTracked;
   }
 
   @override
   set internalTracked(TrackedValue<T> value) {
-    _$_trackedAtom.context.conditionallyRunInAction(() {
+    _$internalTrackedAtom.reportWrite(value, super.internalTracked, () {
       super.internalTracked = value;
-      _$_trackedAtom.reportChanged();
-    }, _$_trackedAtom, name: '${_$_trackedAtom.name}_set');
+    });
   }
 
   final _$SingleValueBaseActionController =
       ActionController(name: 'SingleValueBase');
 
   @override
-  dynamic update(T value, {bool force = false}) {
-    final _$actionInfo = _$SingleValueBaseActionController.startAction();
+  void update(T value, {bool force = false}) {
+    final _$actionInfo = _$SingleValueBaseActionController.startAction(
+        name: 'SingleValueBase.update');
     try {
       return super.update(value, force: force);
     } finally {
@@ -51,12 +53,22 @@ mixin _$SingleValue<T> on SingleValueBase<T>, Store {
 
   @override
   FutureOr<T> modify(Mutator<T> mutator) {
-    final _$actionInfo = _$SingleValueBaseActionController.startAction();
+    final _$actionInfo = _$SingleValueBaseActionController.startAction(
+        name: 'SingleValueBase.modify');
     try {
       return super.modify(mutator);
     } finally {
       _$SingleValueBaseActionController.endAction(_$actionInfo);
     }
+  }
+
+  @override
+  String toString() {
+    return '''
+internalTracked: ${internalTracked},
+value: ${value},
+isNull: ${isNull}
+    ''';
   }
 }
 
@@ -64,26 +76,25 @@ mixin _$ProgressTracker on ProgressTrackerBase, Store {
   final _$taskAtom = Atom(name: 'ProgressTrackerBase.task');
 
   @override
-  String get task {
-    _$taskAtom.context.enforceReadPolicy(_$taskAtom);
-    _$taskAtom.reportObserved();
+  String? get task {
+    _$taskAtom.reportRead();
     return super.task;
   }
 
   @override
-  set task(String value) {
-    _$taskAtom.context.conditionallyRunInAction(() {
+  set task(String? value) {
+    _$taskAtom.reportWrite(value, super.task, () {
       super.task = value;
-      _$taskAtom.reportChanged();
-    }, _$taskAtom, name: '${_$taskAtom.name}_set');
+    });
   }
 
   final _$ProgressTrackerBaseActionController =
       ActionController(name: 'ProgressTrackerBase');
 
   @override
-  dynamic finishTask(double progress, {String newTask}) {
-    final _$actionInfo = _$ProgressTrackerBaseActionController.startAction();
+  void finishTask(double progress, {String? newTask}) {
+    final _$actionInfo = _$ProgressTrackerBaseActionController.startAction(
+        name: 'ProgressTrackerBase.finishTask');
     try {
       return super.finishTask(progress, newTask: newTask);
     } finally {
@@ -92,8 +103,9 @@ mixin _$ProgressTracker on ProgressTrackerBase, Store {
   }
 
   @override
-  dynamic finishTaskRatio(double progress, {String newTask}) {
-    final _$actionInfo = _$ProgressTrackerBaseActionController.startAction();
+  void finishTaskRatio(double progress, {String? newTask}) {
+    final _$actionInfo = _$ProgressTrackerBaseActionController.startAction(
+        name: 'ProgressTrackerBase.finishTaskRatio');
     try {
       return super.finishTaskRatio(progress, newTask: newTask);
     } finally {
@@ -102,12 +114,20 @@ mixin _$ProgressTracker on ProgressTrackerBase, Store {
   }
 
   @override
-  dynamic updateTask(String newTask) {
-    final _$actionInfo = _$ProgressTrackerBaseActionController.startAction();
+  void updateTask(String newTask) {
+    final _$actionInfo = _$ProgressTrackerBaseActionController.startAction(
+        name: 'ProgressTrackerBase.updateTask');
     try {
       return super.updateTask(newTask);
     } finally {
       _$ProgressTrackerBaseActionController.endAction(_$actionInfo);
     }
+  }
+
+  @override
+  String toString() {
+    return '''
+task: ${task}
+    ''';
   }
 }

@@ -16,24 +16,23 @@ class SunnyObservableList<V> extends ObservableList<V>
   SunnyObservableList.of(Iterable<V> map,
       {this.diffAlgorithm,
       this.diffEquality = const DiffEquality(),
-      String debugLabel})
-      : assert(diffEquality != null),
-        debugLabel = debugLabel ?? "List<$V>",
+      String? debugLabel})
+      : debugLabel = debugLabel ?? "List<$V>",
         super.of(map);
 
   SunnyObservableList(
       {this.diffAlgorithm,
       this.diffEquality = const DiffEquality(),
-      String debugLabel})
+      String? debugLabel})
       : assert(diffEquality != null),
         debugLabel = debugLabel ?? "List<$V>",
         super();
 
   SunnyObservableList.ofStream(Stream<Iterable<V>> stream,
-      {FutureOr<Iterable<V>> start,
+      {FutureOr<Iterable<V>>? start,
       this.diffAlgorithm,
       this.diffEquality = const DiffEquality(),
-      String debugLabel})
+      String? debugLabel})
       : assert(diffEquality != null),
         debugLabel = debugLabel ?? "stream[${V.simpleName}]",
         super() {
@@ -47,7 +46,7 @@ class SunnyObservableList<V> extends ObservableList<V>
           print(e);
         }
       }).listen(
-        (_) {},
+        (_) {} as void Function(Null)?,
         cancelOnError: false,
       );
       disposers.add(subscription.cancel);
@@ -55,7 +54,7 @@ class SunnyObservableList<V> extends ObservableList<V>
   }
 
   SunnyObservableList.ofVStream(ValueStream<Iterable<V>> stream,
-      {this.diffEquality = const DiffEquality(), String debugLabel})
+      {this.diffEquality = const DiffEquality(), String? debugLabel})
       : debugLabel = debugLabel ?? "stream[${V.name}]",
         assert(diffEquality != null),
         super() {
@@ -81,11 +80,16 @@ class SunnyObservableList<V> extends ObservableList<V>
   }
 
   void subscribeTo(Stream<Iterable<V>> other, {bool sync = false}) {
-    disposers.add(other.asyncMap((items) async {
-      await this.sync(items, async: sync != true);
-    }).listen((_) {
-      // nothing to do
-    }, cancelOnError: false).cancel);
+    disposers.add(other
+        .asyncMap((items) async {
+          await this.sync(items, async: sync != true);
+        })
+        .listen(
+            (_) {
+              // nothing to do
+            } as void Function(Null)?,
+            cancelOnError: false)
+        .cancel);
   }
 
   @override
@@ -94,7 +98,7 @@ class SunnyObservableList<V> extends ObservableList<V>
   String debugLabel;
 
   DiffEquality diffEquality;
-  ListDiffAlgorithm diffAlgorithm;
+  ListDiffAlgorithm? diffAlgorithm;
 
   StreamController<ListDiffs<V>> _changes = StreamController.broadcast();
 
@@ -124,22 +128,22 @@ class SunnyObservableList<V> extends ObservableList<V>
 
   /// Syncs the values of this list with a replacement list, and emits modification events in the form of
   /// [ListChange]
-  Future<ListDiffs<V>> sync(FutureOr<Iterable<V>> newItemsFuture,
+  Future<ListDiffs<V>> sync(FutureOr<Iterable<V>?> newItemsFuture,
       {bool async = true}) async {
-    final _items = this;
+    final SunnyObservableList<V> _items = this;
     final newItems = await newItemsFuture;
 
     ListDiffs<V> diff;
     if (async) {
       diff = await _items.differencesAsync(
-        [...newItems],
+        [...newItems!],
         algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers,
         equality: diffEquality,
         debugName: debugLabel,
       );
     } else {
       diff = _items.differences(
-        [...newItems],
+        [...newItems!],
         algorithm: diffAlgorithm ?? ListDiffAlgorithm.myers,
         equality: diffEquality,
       );
@@ -169,17 +173,17 @@ class SunnyObservableList<V> extends ObservableList<V>
     try {
       if (change is DeleteDiff<V>) {
         for (int d = 0; d < change.delete.size; d++) {
-          this.safeRemove(change.delete.index);
+          this.safeRemove(change.delete.index!);
         }
       } else if (change is InsertDiff<V>) {
-        var start = change.index;
+        var start = change.index!;
         for (final item in change.items) {
           this.insert(start++, item);
         }
       } else if (change is ReplaceDiff<V>) {
         var start = change.index;
         for (final item in change.items) {
-          this[start] = item;
+          this[start!] = item;
         }
       }
     } catch (e, stack) {

@@ -16,13 +16,13 @@ import 'sunny_observable_list.dart';
 /// The normal [ObservableMap] class doesn't observe changes to the values bound to a key, eg "Let me know if contact 53 changes",
 /// so this class offers some additional connected observers that report changes to map keys
 class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
-  String debugLabel;
+  String? debugLabel;
 
-  StreamSubscription _subscribedTo;
+  StreamSubscription? _subscribedTo;
 
   set subscribedTo(StreamSubscription subscription) {
     if (_subscribedTo != null) {
-      _subscribedTo.cancel();
+      _subscribedTo!.cancel();
     }
     _subscribedTo = subscription;
   }
@@ -36,18 +36,18 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
   String get loggerName => debugLabel ?? super.loggerName;
 
   SunnyObservableMap.of(Map<K, V> map,
-      {String debugLabel, DiffEquality diffDelegator})
+      {String? debugLabel, DiffEquality? diffDelegator})
       : _diffEquality = diffDelegator ?? DiffEquality(),
         debugLabel = debugLabel ?? "ObservableMap<$K, $V>",
         super.of(map) {
     _initialize();
   }
 
-  SunnyObservableMap({String debugLabel, DiffEquality diffDelegator})
+  SunnyObservableMap({String? debugLabel, DiffEquality? diffDelegator})
       : this.of(<K, V>{}, debugLabel: debugLabel, diffDelegator: diffDelegator);
 
   SunnyObservableMap.ofStream(Map<K, V> initial, Stream<Map<K, V>> stream,
-      {this.debugLabel, DiffEquality diffEquality})
+      {this.debugLabel, DiffEquality? diffEquality})
       : _diffEquality = diffEquality ?? DiffEquality(),
         super.of(initial) {
     _initialize();
@@ -55,7 +55,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
   }
 
   SunnyObservableMap.ofVStream(ValueStream<Map<K, V>> stream,
-      {this.debugLabel, DiffEquality diffEquality})
+      {this.debugLabel, DiffEquality? diffEquality})
       : _diffEquality = diffEquality ?? DiffEquality(),
         super() {
     _initialize();
@@ -71,13 +71,13 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     });
   }
 
-  Stream<Iterable<K>> _keys;
-  Stream<Iterable<V>> _values;
+  late Stream<Iterable<K?>> _keys;
+  Stream<Iterable<V?>>? _values;
 
-  final StreamController<MapDiffs<K, V>> changeController =
+  final StreamController<MapDiffs<K?, V?>> changeController =
       StreamController.broadcast();
 
-  Stream<MapDiffs<K, V>> get changeStream => changeController.stream;
+  Stream<MapDiffs<K?, V?>> get changeStream => changeController.stream;
 
   final List<EmptyCallback> _disposers = [];
 
@@ -97,20 +97,20 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     return 'SunnyObservableMap{$debugLabel}';
   }
 
-  MapDiffs<K, V> newBuilder() => MapDiffs.builder({...this},
+  MapDiffs<K?, V?> newBuilder() => MapDiffs.builder({...this},
       valueEquality: _diffEquality, checkValues: true);
 
-  HStream<V> watchKey(K key) => HStream(
+  HStream<V?> watchKey(K key) => HStream(
       this[key], changeStream.map((changes) => changes.args.replacement[key]));
 
-  V call(K key) {
+  V? call(K key) {
     return this[key];
   }
 
-  HStream<Map<K, V>> get stream => HStream(
+  HStream<Map<K?, V?>> get stream => HStream(
       {...this}, changeStream.map((changes) => changes.args.replacement));
 
-  Dispose observeKey(K key, Consumer<V> react, {bool fireImmediately}) {
+  Dispose observeKey(K key, Consumer<V?> react, {bool? fireImmediately}) {
     if (fireImmediately == true) {
       react(this[key]);
     }
@@ -123,10 +123,10 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
 
   /// Allows for observation of the maps keys as a list.  Provides a means
   /// of disposing
-  HStream<Iterable<K>> get keysStream => HStream(this.keys, _keys);
+  HStream<Iterable<K?>> get keysStream => HStream(this.keys, _keys);
 
   /// Allows for observation of a single map key.
-  ValueStream<V> keyStream(K key) => HStream<V>(
+  ValueStream<V?> keyStream(K key) => HStream<V?>(
       this[key],
       changeStream
           .expand((changes) => changes)
@@ -149,9 +149,11 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
 
   /// Allows for observation of the values as a list.  Provides a means
   /// of disposing
-  ValueStream<Iterable<V>> get valueStream {
+  ValueStream<Iterable<V?>> get valueStream {
     return ValueStream.of({...values}, _values);
   }
+
+  Map<K, V> safeCast() => this.cast<K, V>();
 
   Future<MapDiffs<K, V>> sync(FutureOr<Map<K, V>> newMap,
       {bool async = true}) async {
@@ -159,27 +161,27 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
 
     try {
       if (async) {
-        final changes = await this.differencesAsync(
-          nm,
-          checkValues: true,
-          debugName: debugLabel,
-          valueEquality: _diffEquality,
-        );
+        final changes = await this.safeCast().differencesAsync(
+              nm,
+              checkValues: true,
+              debugName: debugLabel,
+              valueEquality: _diffEquality,
+            );
         applyChanges(changes);
         return changes;
       } else {
-        final changes = this.differences(
-          nm,
-          checkValues: true,
-          valueEquality: _diffEquality,
-        );
+        final changes = this.safeCast().differences(
+              nm,
+              checkValues: true,
+              valueEquality: _diffEquality,
+            );
         applyChanges(changes);
         return changes;
       }
     } catch (e, stack) {
       // ignore: unnecessary_brace_in_string_interps
       log.severe("has issues syncing ${nm.length} records: $e", e, stack);
-      return MapDiffs.builder(this);
+      return MapDiffs.builder(this.safeCast());
     }
   }
 
@@ -190,7 +192,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
           if (change.value == null) {
             super.remove(change.key);
           } else {
-            super[change.key] = change.value;
+            super[change.key] = change.value!;
           }
           break;
         case MapDiffType.unset:
@@ -202,7 +204,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
           if (change.value == null) {
             super.remove(change.key);
           } else {
-            super[change.key] = change.value;
+            super[change.key] = change.value!;
           }
           break;
       }
@@ -211,11 +213,11 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
   }
 
   @override
-  V putIfAbsent(K key, V ifAbsent()) {
+  V putIfAbsent(K? key, V ifAbsent()) {
     if (!containsKey(key)) {
       return _buildChanges((_) {
-        final newValue = ifAbsent?.call();
-        _.set(key, newValue);
+        final newValue = ifAbsent.call();
+        _.set(key!, newValue);
 
         /// Make sure you use super to avoid stack overflows
         /// with subclasses
@@ -225,17 +227,17 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     } else {
       /// Make sure you use super to avoid stack overflows
       /// with subclasses
-      return super[key];
+      return super[key]!;
     }
   }
 
-  Set<K> removes(Map<K, dynamic> newData) {
+  Set<K?> removes(Map<K, dynamic> newData) {
     final currKeys = this.keys.toSet();
     return currKeys.difference(newData.keys.toSet());
   }
 
-  R _buildChanges<R>(R builder(MapDiffs<K, V> _)) {
-    final changes = MapDiffs<K, V>.builder(this,
+  R _buildChanges<R>(R builder(MapDiffs<K?, V?> _)) {
+    final changes = MapDiffs<K?, V?>.builder(this,
         valueEquality: _diffEquality, checkValues: true);
     final returnValue = builder(changes);
     changeController.add(changes);
@@ -243,60 +245,60 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
   }
 
   @override
-  void push(Object key, V value) {
+  void push(Object? key, V value) {
     _buildChanges((_) {
-      _.change(key as K, value);
+      _.change(key as K?, value);
       super.push(key, value);
     });
   }
 
   @override
-  V remove(Object key) {
+  V? remove(Object? key) {
     return _buildChanges((_) {
-      _.remove(key as K);
+      _.remove(key as K?);
       return super.remove(key);
     });
   }
 
   @override
-  void addAll(Map<K, V> other) {
-    final combined = {...this, ...?other};
+  void addAll(Map<K?, V> other) {
+    final combined = {...this.safeCast(), ...other.cast<K, V>()};
     this.sync(combined);
   }
 
   @override
-  V update(K key, V update(V value), {V ifAbsent()}) {
+  V update(K? key, V update(V value), {V ifAbsent()?}) {
     return _buildChanges((_) {
       if (this.containsKey(key)) {
-        final newValue = update(this[key]);
+        final newValue = update(this[key]!);
         _.change(key, newValue);
         this[key] = newValue;
         return newValue;
       } else {
         final newValue = ifAbsent?.call();
         if (newValue != null) {
-          _.set(key, newValue);
+          _.set(key!, newValue);
         }
-        this[key] = newValue;
+        this[key] = newValue!;
         return newValue;
       }
     });
   }
 
   @override
-  void updateAll(V update(K key, V value)) {
-    final values = {...this};
+  void updateAll(V update(K? key, V value)) {
+    final values = {...this.safeCast()};
     values.forEach((k, v) => values[k] = update(k, v));
     this.sync(values);
   }
 
   @override
-  void addEntries(Iterable<MapEntry<K, V>> newEntries) {
+  void addEntries(Iterable<MapEntry<K?, V>> newEntries) {
     this.addAll(Map.fromEntries(newEntries));
   }
 
   @override
-  void removeWhere(bool test(K key, V value)) {
+  void removeWhere(bool test(K? key, V value)) {
     return _buildChanges((_) {
       this.forEach((k, v) {
         if (test(k, v) == true) {
@@ -309,23 +311,26 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
   }
 
   @override
-  void operator []=(K key, V value) {
+  void operator []=(K? key, V value) {
     /// These changes should not be tracked
     super[key] = value;
   }
 
   /// Doesn't trigger observers
-  void removeQuiet(Object key) {
+  void removeQuiet(Object? key) {
     this.remove(key);
   }
 
   Future syncAndListenFrom(Stream<Map<K, V>> stream,
-      {final FutureOr<Map<K, V>> start}) async {
+      {final FutureOr<Map<K, V>?>? start}) async {
     Stream<Map<K, V>> _stream = stream;
     if (start != null) {
-      await this.sync(start);
+      final _start = await start;
+      if (_start != null) {
+        await this.sync(_start);
+      }
     }
-    this.subscribedTo = _stream.where((_) => _ != null).asyncMap((replacement) {
+    this.subscribedTo = _stream.asyncMap((replacement) {
       return this.sync(replacement);
     }).listen((_) {}, cancelOnError: false);
   }
@@ -345,12 +350,12 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
 }
 
 class SunnyObservableMapList<K, L>
-    extends SunnyObservableMap<K, SunnyObservableList<L>> {
-  SunnyObservableMapList([String debugLabel, this.listDiffDelegator])
+    extends SunnyObservableMap<K?, SunnyObservableList<L>> {
+  SunnyObservableMapList([String? debugLabel, this.listDiffDelegator])
       : _log = Logger("mapList.$debugLabel"),
         super(debugLabel: debugLabel, diffDelegator: DiffEquality());
 
-  final DiffEquality listDiffDelegator;
+  final DiffEquality? listDiffDelegator;
   final Logger _log;
 
   @override
@@ -359,13 +364,13 @@ class SunnyObservableMapList<K, L>
   }
 
   @override
-  void operator []=(K key, SunnyObservableList<L> value) =>
+  void operator []=(K? key, SunnyObservableList<L>? value) =>
       illegalState("No direct updates are possible for this "
           "map. You must use the get operations instead");
 
   @override
-  SunnyObservableList<L> operator [](Object key) {
-    final k = key as K;
+  SunnyObservableList<L>? operator [](Object? key) {
+    final k = key as K?;
     return putIfAbsent(k, () {
       final list = SunnyObservableList<L>(
           debugLabel: "$debugLabel[$key]",
@@ -395,17 +400,17 @@ class SunnyObservableMapList<K, L>
       _log.fine("sync: key=$removedKey");
 
       // Instead of removing, just clear out the list.  This ensures that everybody knows about it.
-      await this[removedKey].sync(<L>[]);
+      await this[removedKey]!.sync(<L>[]);
     }).awaitAll();
 
     await replacement.entries.map((e) async {
       _log.fine("sync: key=$e count${e.value.length}");
-      final childThreads = this[e.key];
+      final SunnyObservableList<L> childThreads = this[e.key]!;
       await childThreads.sync(e.value ?? []);
     }).awaitAll();
   }
 
-  Future<SunnyObservableMap<K, SunnyObservableList<L>>> syncFromMapList(
+  Future<SunnyObservableMap<K?, SunnyObservableList<L>>> syncFromMapList(
       ValueStream<Map<K, List<L>>> replacement) async {
     final first = replacement.get();
     if (first is! Future) {
@@ -413,7 +418,7 @@ class SunnyObservableMapList<K, L>
       this.subscribedTo =
           replacement.after.listen(takeFromMapList, cancelOnError: false);
     } else {
-      final _first = await first;
+      final _first = await (first as FutureOr<Map<K, List<L>>>);
       await takeFromMapList(_first);
       this.subscribedTo =
           replacement.after.listen(takeFromMapList, cancelOnError: false);
@@ -424,18 +429,18 @@ class SunnyObservableMapList<K, L>
 }
 
 class SunnyObservableMapMap<K1, K, V>
-    extends SunnyObservableMap<K1, SunnyObservableMap<K, V>> {
-  SunnyObservableMapMap([String debugLabel, this.listDiffDelegator])
+    extends SunnyObservableMap<K1?, SunnyObservableMap<K, V>> {
+  SunnyObservableMapMap([String? debugLabel, this.listDiffDelegator])
       : log = Logger("mapMap[${debugLabel ?? '-'}"),
         super(debugLabel: debugLabel, diffDelegator: DiffEquality());
 
-  final DiffEquality listDiffDelegator;
+  final DiffEquality? listDiffDelegator;
 
   @override
   final Logger log;
 
   @override
-  void operator []=(K1 key, SunnyObservableMap<K, V> value) =>
+  void operator []=(K1? key, SunnyObservableMap<K, V>? value) =>
       illegalState("No direct updates are possible for this "
           "map. You must use the get operations instead");
 
@@ -445,9 +450,9 @@ class SunnyObservableMapMap<K1, K, V>
   }
 
   @override
-  SunnyObservableMap<K, V> operator [](Object key) {
-    final k = key as K1;
-    return putIfAbsent(key as K1, () {
+  SunnyObservableMap<K, V>? operator [](Object? key) {
+    final k = key as K1?;
+    return putIfAbsent(key, () {
       final map = SunnyObservableMap<K, V>(
         diffDelegator: listDiffDelegator,
         debugLabel: "$debugLabel[$key]",
@@ -463,19 +468,19 @@ class SunnyObservableMapMap<K1, K, V>
     // Now, let's apply all the childThreads.  This will make sure to remove anything that needs removing, etc.
     removes(replacement).forEach((removedKey) {
       // Instead of removing, just clear out the list.  This ensures that everybody knows about it.
-      this[removedKey].sync(<K, V>{});
+      this[removedKey]!.sync(<K, V>{});
     });
 
     replacement.forEach((key, list) {
-      final childThreads = this[key];
+      final SunnyObservableMap<K, V> childThreads = this[key]!;
 
       childThreads.sync(list);
     });
   }
 
-  SunnyObservableMap<K1, SunnyObservableMap<K, V>> syncFromMapList(
+  SunnyObservableMap<K1?, SunnyObservableMap<K, V>> syncFromMapList(
       HStream<Map<K1, Map<K, V>>> replacement) {
-    this.takeFromMapMap(replacement.first);
+    this.takeFromMapMap(replacement.first!);
     this.subscribedTo = replacement.listen(takeFromMapMap);
     return this;
   }

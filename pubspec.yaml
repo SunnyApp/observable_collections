@@ -1,19 +1,38 @@
 name: observable_collections
-version: 0.5.1+2
+version: 0.6.1+2
 homepage: https://github.com/SunnyApp/observable_collections
 description: Collections that publish and track changes
 environment: 
-  sdk: '>=2.6.0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 dependencies: 
-  mobx: ^1.2.1+4
-  logging: ^0.11.4
-  collection_diff: ^1.0.3
-  collection_diff_worker: ^0.4.5
-  sunny_dart: ^0.6.0+1
+  mobx: ^2.0.0-nullsafety.3
+  logging: ^1.0.0
+  collection_diff: ^2.0.3+5
+  collection_diff_worker: ^0.5.5+4
+  sunny_dart: ^0.8.0+7
   flutter: 
     sdk: flutter
 dev_dependencies: 
-  mobx_codegen: ^1.1.2
-  flutter_test: 
+#  mobx_codegen: any
+  mobx_codegen:
+    git:
+      url: https://github.com/mobxjs/mobx.dart
+      path: mobx_codegen
+      ref: null_safety
+
+  flutter_test:
     sdk: flutter
+dependency_overrides:
+  mobx: ^2.0.0-nullsafety.3
+  build_runner: ^1.12.1
+  build_resolvers: ^2.0.0
+  analyzer: ^1.1.0
+  build: ^2.0.0
+  source_span: ^1.8.1
+  dart_style: ^1.3.14
+  source_gen:
+    git:
+      url: https://github.com/simolus3/source_gen
+      ref: null-safety
+      path: source_gen
 flutter: null

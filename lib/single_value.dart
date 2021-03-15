@@ -22,8 +22,8 @@ part 'single_value.g.dart';
 /// observable.update("Eric Martineau");
 /// ```
 ///
-class SingleValue<T> extends SingleValueBase<T> with _$SingleValue<T> {
-  SingleValue(T value, [String name]) : super(value, name);
+class SingleValue<T> extends SingleValueBase<T?> with _$SingleValue<T?> {
+  SingleValue(T? value, [String? name]) : super(value, name);
 
   SingleValue.ofValueNotifier(ValueNotifier<T> notifier, {bool sync = false})
       : super(notifier.value) {
@@ -43,9 +43,9 @@ abstract class SingleValueBase<T> with Disposable, Store {
   SingleValueBase(T value, [this.name]) : internalTracked = TrackedValue(value);
 
   /// A name - can be useful to generate a key based on tracking this value.  Not required
-  String name;
+  String? name;
 
-  Key get key => name != null ? Key(name) : null;
+  Key? get key => name != null ? Key(name!) : null;
 
   @observable
   TrackedValue<T> internalTracked;
@@ -83,9 +83,9 @@ abstract class SingleValueBase<T> with Disposable, Store {
 }
 
 ReactionDisposer syncToSingleValue<T>(
-    SingleValue<T> singleValue, ValueNotifier<T> notifier) {
-  return reaction(
-      (_) => singleValue.value, (newValue) => notifier.value = newValue as T);
+    SingleValue<T> singleValue, ValueNotifier<T?> notifier) {
+  return reaction((_) => singleValue.value,
+      (dynamic newValue) => notifier.value = newValue as T?);
 }
 
 ListenerDisposer syncToValueNotifier<T>(
@@ -108,24 +108,24 @@ class StateCounter {
   /// A padded value that has some slush applied.  Can be zero
   double _padded = 0;
 
-  StateCounter([String name]) : _counter = SingleValue<double>(0, name);
+  StateCounter([String? name]) : _counter = SingleValue<double>(0, name);
 
   /// Delegates the creation of a key to the wrapped [SingleValue].  This is optional
-  Key get key => _counter.key;
+  Key? get key => _counter.key;
 
   /// Keeps the public value in sync with an internal padded value.
   void _sync() {
     _counter.update(math.max(_actual, _padded));
   }
 
-  void increment([double amount]) {
+  void increment([double? amount]) {
     _actual += (amount ?? 1);
     _sync();
   }
 
   /// Increments the value by a certain amount over a duration using an exponential backoff.
   /// Helps prevent large pauses while operations are / warming up.
-  Future predict(double amount, {Duration step}) async {
+  Future predict(double amount, {Duration? step}) async {
     // We don't allow multiple pads to run
     print("Predicting $amount (target of ${_actual + amount})");
     double progress = amount;
@@ -184,16 +184,16 @@ class StateCounter {
     _sync();
   }
 
-  double get count => _counter.value;
+  double get count => _counter.value ?? 0.0;
 }
 
 class ProgressTracker extends ProgressTrackerBase with _$ProgressTracker {
   /// Creates
-  ProgressTracker(num total, [String name]) : super._(total, name);
+  ProgressTracker(num total, [String? name]) : super._(total, name);
 
   /// Instead of counting towards an arbitrary count, we'll base the counter on a percent and the caller will
   /// make sure to send the appropriate ratios
-  ProgressTracker.ratio([String name]) : super._(100.0, name);
+  ProgressTracker.ratio([String? name]) : super._(100.0, name);
 }
 
 abstract class ProgressTrackerBase extends StateCounter with Store {
@@ -204,7 +204,7 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
 
   /// Stores what's currently being worked on
   @observable
-  String task;
+  String? task;
 
   /// The total number of units working towards.  For percent/ratio based tracking, this will be 100
   double get total => _total;
@@ -220,7 +220,7 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
   }
 
   @action
-  void finishTask(double progress, {String newTask}) {
+  void finishTask(double progress, {String? newTask}) {
     this.update(progress);
     if (newTask != null) {
       this.task = newTask;
@@ -228,7 +228,7 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
   }
 
   @action
-  void finishTaskRatio(double progress, {String newTask}) {
+  void finishTaskRatio(double progress, {String? newTask}) {
     updateRatio(progress);
     if (newTask != null) {
       this.task = newTask;
@@ -240,7 +240,7 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
     this.task = newTask;
   }
 
-  ProgressTrackerBase._(num total, [String name])
+  ProgressTrackerBase._(num total, [String? name])
       : assert(total != null, total >= 0),
         _total = total.toDouble(),
         super(name);
@@ -266,7 +266,7 @@ class TrackedValue<T> {
   final T tracked;
   final int timestamp;
 
-  TrackedValue(this.tracked, [int timestamp])
+  TrackedValue(this.tracked, [int? timestamp])
       : timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
   TrackedValue<T> updated(T value, {bool force = false}) {

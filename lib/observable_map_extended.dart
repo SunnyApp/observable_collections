@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:mobx/mobx.dart' hide ObservableMap;
 
-Atom _observableMapAtom<K, V>(ReactiveContext context) {
+Atom _observableMapAtom<K, V>(ReactiveContext? context) {
   final ctx = context ?? mainContext;
   return Atom(name: ctx.nameFor('ObservableMap<$K, $V>'), context: ctx);
 }
@@ -10,49 +10,50 @@ Atom _observableMapAtom<K, V>(ReactiveContext context) {
 class ObservableMap<K, V>
     with
         // ignore:prefer_mixin
-        MapMixin<K, V>
+        MapMixin<K?, V>
     implements
         Listenable<MapChange<K, V>> {
-  ObservableMap({ReactiveContext context})
+  ObservableMap({ReactiveContext? context})
       : _context = context ?? mainContext,
         _atom = _observableMapAtom<K, V>(context),
         _map = <K, V>{};
 
-  ObservableMap.of(Map<K, V> other, {ReactiveContext context})
+  ObservableMap.of(Map<K, V> other, {ReactiveContext? context})
       : _context = context ?? mainContext,
         _atom = _observableMapAtom<K, V>(context),
         _map = Map.of(other);
 
-  ObservableMap.linkedHashMapFrom(Map<K, V> other, {ReactiveContext context})
+  ObservableMap.linkedHashMapFrom(Map<K, V> other, {ReactiveContext? context})
       : _context = context ?? mainContext,
         _atom = _observableMapAtom<K, V>(context),
         _map = LinkedHashMap.from(other);
 
   ObservableMap.splayTreeMapFrom(Map<K, V> other,
-      {int Function(K, K) compare,
+      {int Function(K, K)? compare,
       // ignore: avoid_annotating_with_dynamic
-      bool Function(dynamic) isValidKey,
-      ReactiveContext context})
+      bool Function(dynamic)? isValidKey,
+      ReactiveContext? context})
       : _context = context ?? mainContext,
         _atom = _observableMapAtom<K, V>(context),
-        _map = SplayTreeMap.from(other, compare, isValidKey);
+        _map = SplayTreeMap.from(
+            other, compare as int Function(K?, K?)?, isValidKey);
 
   ObservableMap._wrap(this._context, this._map, this._atom);
 
   final ReactiveContext _context;
   final Atom _atom;
-  final Map<K, V> _map;
+  final Map<K?, V> _map;
 
-  Listeners<MapChange<K, V>> _listenersField;
+  Listeners<MapChange<K, V>>? _listenersField;
 
   Listeners<MapChange<K, V>> get _listeners =>
       _listenersField ??= Listeners(_context);
 
   bool get _hasListeners =>
-      _listenersField != null && _listenersField.hasHandlers;
+      _listenersField != null && _listenersField!.hasHandlers;
 
   @override
-  V operator [](Object key) {
+  V? operator [](Object? key) {
     _context.enforceReadPolicy(_atom);
 
     _atom.reportObserved();
@@ -60,19 +61,19 @@ class ObservableMap<K, V>
   }
 
   /// Forces an update, even in cases where the value at the [key] has not changed or is the same instance.
-  void push(final Object key, V value) {
+  void push(final Object? key, V value) {
     _context.conditionallyRunInAction(() {
-      _reportUpdate(key as K, value, _map[key]);
+      _reportUpdate(key as K?, value, _map[key]);
       final oldValue = _map[key];
       if (value != oldValue) {
-        _map[key as K] = value;
+        _map[key] = value;
       }
       _atom.reportChanged();
     }, _atom);
   }
 
   @override
-  void operator []=(K key, V value) {
+  void operator []=(K? key, V value) {
     _context.conditionallyRunInAction(() {
       final oldValue = _map[key];
       var type = 'set';
@@ -115,21 +116,21 @@ class ObservableMap<K, V>
   }
 
   @override
-  Iterable<K> get keys => MapKeysIterable(_map.keys, _atom);
+  Iterable<K?> get keys => MapKeysIterable(_map.keys, _atom);
 
   @override
   Map<RK, RV> cast<RK, RV>() =>
-      ObservableMap._wrap(_context, super.cast(), _atom);
+      ObservableMap<RK, RV>._wrap(_context, super.cast(), _atom).cast();
 
   @override
-  V remove(Object key) {
-    V value;
+  V? remove(Object? key) {
+    V? value;
 
     _context.conditionallyRunInAction(() {
       if (_hasListeners) {
         if (_map.containsKey(key)) {
           value = _map.remove(key);
-          _reportRemove(key as K, value);
+          _reportRemove(key as K?, value);
           _atom.reportChanged();
           return;
         }
@@ -169,14 +170,14 @@ class ObservableMap<K, V>
   }
 
   @override
-  bool containsKey(Object key) {
+  bool containsKey(Object? key) {
     _context.enforceReadPolicy(_atom);
 
     _atom.reportObserved();
     return _map.containsKey(key);
   }
 
-  void _reportUpdate(K key, V newValue, V oldValue) {
+  void _reportUpdate(K? key, V newValue, V? oldValue) {
     _listeners.notifyListeners(MapChange<K, V>(
       type: OperationType.update,
       key: key,
@@ -186,7 +187,7 @@ class ObservableMap<K, V>
     ));
   }
 
-  void _reportAdd(K key, V newValue) {
+  void _reportAdd(K? key, V newValue) {
     _listeners.notifyListeners(MapChange<K, V>(
       type: OperationType.add,
       key: key,
@@ -195,7 +196,7 @@ class ObservableMap<K, V>
     ));
   }
 
-  void _reportRemove(K key, V oldValue) {
+  void _reportRemove(K? key, V? oldValue) {
     _listeners.notifyListeners(MapChange<K, V>(
       type: OperationType.remove,
       key: key,
@@ -205,7 +206,7 @@ class ObservableMap<K, V>
   }
 
   @override
-  Dispose observe(MapChangeListener<K, V> listener, {bool fireImmediately}) {
+  Dispose observe(MapChangeListener<K, V> listener, {bool? fireImmediately}) {
     final dispose = _listeners.add(listener);
     if (fireImmediately == true) {
       _map.forEach(_reportAdd);
@@ -222,13 +223,13 @@ typedef MapChangeListener<K, V> = void Function(MapChange<K, V>);
 class MapChange<K, V> {
   MapChange({this.type, this.key, this.newValue, this.oldValue, this.object});
 
-  final OperationType type;
+  final OperationType? type;
 
-  final K key;
-  final V newValue;
-  final V oldValue;
+  final K? key;
+  final V? newValue;
+  final V? oldValue;
 
-  final ObservableMap<K, V> object;
+  final ObservableMap<K, V>? object;
 }
 
 // ignore:prefer_mixin
@@ -247,7 +248,7 @@ class MapKeysIterable<K> with IterableMixin<K> {
   }
 
   @override
-  bool contains(Object element) {
+  bool contains(Object? element) {
     _atom.context.enforceReadPolicy(_atom);
 
     _atom.reportObserved();
