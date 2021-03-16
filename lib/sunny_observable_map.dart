@@ -6,6 +6,7 @@ import 'package:collection_diff_worker/collection_diff_worker.dart';
 import 'package:logging/logging.dart';
 import 'package:mobx/mobx.dart' hide ObservableMap, MapChange;
 import 'package:sunny_dart/sunny_dart.dart';
+import 'package:dartxx/dartxx.dart';
 import 'package:sunny_dart/typedefs.dart';
 
 import 'empty_callback.dart';
@@ -64,17 +65,17 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
 
   void _initialize() {
     _keys = changeController.stream.map((changes) {
-      return [...this.keys];
+      return [...this.keys].notNull();
     });
     _values = changeController.stream.map((changes) {
       return [...this.values];
     });
   }
 
-  late Stream<Iterable<K?>> _keys;
-  Stream<Iterable<V?>>? _values;
+  late Stream<Iterable<K>> _keys;
+  Stream<Iterable<V>>? _values;
 
-  final StreamController<MapDiffs<K?, V?>> changeController =
+  final StreamController<MapDiffs<K, V>> changeController =
       StreamController.broadcast();
 
   Stream<MapDiffs<K?, V?>> get changeStream => changeController.stream;
@@ -97,7 +98,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     return 'SunnyObservableMap{$debugLabel}';
   }
 
-  MapDiffs<K?, V?> newBuilder() => MapDiffs.builder({...this},
+  MapDiffs<K, V> newBuilder() => MapDiffs.builder({...this.safeCast()},
       valueEquality: _diffEquality, checkValues: true);
 
   HStream<V?> watchKey(K key) => HStream(
@@ -135,13 +136,10 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
         switch (change.type) {
           case MapDiffType.unset:
             return null;
-            break;
           case MapDiffType.change:
             return change.value;
-            break;
           case MapDiffType.set:
             return change.value;
-            break;
           default:
             throw "Invalid type - must be a known MapDiff type";
         }
@@ -149,7 +147,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
 
   /// Allows for observation of the values as a list.  Provides a means
   /// of disposing
-  ValueStream<Iterable<V?>> get valueStream {
+  ValueStream<Iterable<V>> get valueStream {
     return ValueStream.of({...values}, _values);
   }
 
@@ -236,8 +234,8 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
     return currKeys.difference(newData.keys.toSet());
   }
 
-  R _buildChanges<R>(R builder(MapDiffs<K?, V?> _)) {
-    final changes = MapDiffs<K?, V?>.builder(this,
+  R _buildChanges<R>(R builder(MapDiffs<K, V> _)) {
+    final changes = MapDiffs<K, V>.builder(this.safeCast(),
         valueEquality: _diffEquality, checkValues: true);
     final returnValue = builder(changes);
     changeController.add(changes);
@@ -406,7 +404,7 @@ class SunnyObservableMapList<K, L>
     await replacement.entries.map((e) async {
       _log.fine("sync: key=$e count${e.value.length}");
       final SunnyObservableList<L> childThreads = this[e.key]!;
-      await childThreads.sync(e.value ?? []);
+      await childThreads.sync(e.value);
     }).awaitAll();
   }
 

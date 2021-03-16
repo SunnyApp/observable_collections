@@ -9,7 +9,7 @@ packages:
     source: hosted
     version: "17.0.0"
   analyzer:
-    dependency: "direct overridden"
+    dependency: "direct dev"
     description:
       name: analyzer
       url: "https://pub.dartlang.org"
@@ -37,7 +37,7 @@ packages:
     source: hosted
     version: "2.1.0"
   build:
-    dependency: "direct overridden"
+    dependency: "direct dev"
     description:
       name: build
       url: "https://pub.dartlang.org"
@@ -58,14 +58,14 @@ packages:
     source: hosted
     version: "2.1.10"
   build_resolvers:
-    dependency: "direct overridden"
+    dependency: "direct dev"
     description:
       name: build_resolvers
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
   build_runner:
-    dependency: "direct overridden"
+    dependency: "direct dev"
     description:
       name: build_runner
       url: "https://pub.dartlang.org"
@@ -177,7 +177,7 @@ packages:
     source: hosted
     version: "3.0.0"
   dart_style:
-    dependency: "direct overridden"
+    dependency: "direct dev"
     description:
       name: dart_style
       url: "https://pub.dartlang.org"
@@ -439,7 +439,7 @@ packages:
     source: sdk
     version: "0.0.99"
   source_gen:
-    dependency: "direct overridden"
+    dependency: "direct dev"
     description:
       path: source_gen
       ref: null-safety
@@ -448,7 +448,7 @@ packages:
     source: git
     version: "0.9.10+4-dev"
   source_span:
-    dependency: "direct overridden"
+    dependency: "direct dev"
     description:
       name: source_span
       url: "https://pub.dartlang.org"
