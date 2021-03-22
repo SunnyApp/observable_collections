@@ -1,3 +1,6 @@
+## [0.6.1-nullsafety.7]
+ * Updating to lastest dartxx
+
 ## [0.6.1+3]
  * Ugh
 

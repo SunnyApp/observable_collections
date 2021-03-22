@@ -1,5 +1,5 @@
 name: observable_collections
-version: 0.6.1-nullsafety.6
+version: 0.6.1-nullsafety.7
 homepage: https://github.com/SunnyApp/observable_collections
 description: Collections that publish and track changes
 environment: 
