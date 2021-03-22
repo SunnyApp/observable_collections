@@ -88,9 +88,7 @@ class SunnyObservableMap<K, V> extends ObservableMap<K, V> with LoggingMixin {
   }
 
   void addDisposer(EmptyCallback dispose) {
-    if (dispose != null) {
-      _disposers.add(dispose);
-    }
+    _disposers.add(dispose);
   }
 
   @override

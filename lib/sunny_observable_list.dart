@@ -5,8 +5,9 @@ import 'package:collection_diff/diff_algorithm.dart';
 import 'package:collection_diff/list_diff_model.dart';
 import 'package:collection_diff_worker/collection_diff_worker.dart';
 import 'package:mobx/mobx.dart' hide ObservableMap, ListChange;
-import 'package:sunny_dart/sunny_dart.dart';
-
+import 'package:sunny_dart/sunny_dart.dart'
+    show LoggingMixin, Disposable, ValueStream;
+import 'package:sunny_dart/extensions.dart';
 import 'empty_callback.dart';
 
 /// Extension of [ObservableList] that supports syncing internal items from an external list.  When dart 2.6 comes
@@ -24,8 +25,7 @@ class SunnyObservableList<V> extends ObservableList<V>
       {this.diffAlgorithm,
       this.diffEquality = const DiffEquality(),
       String? debugLabel})
-      : assert(diffEquality != null),
-        debugLabel = debugLabel ?? "List<$V>",
+      : debugLabel = debugLabel ?? "List<$V>",
         super();
 
   SunnyObservableList.ofStream(Stream<Iterable<V>> stream,
@@ -33,8 +33,7 @@ class SunnyObservableList<V> extends ObservableList<V>
       this.diffAlgorithm,
       this.diffEquality = const DiffEquality(),
       String? debugLabel})
-      : assert(diffEquality != null),
-        debugLabel = debugLabel ?? "stream[${V.simpleName}]",
+      : debugLabel = debugLabel ?? "stream[${V.simpleName}]",
         super() {
     this.sync(start).then((_) {
       final subscription = stream.asyncMap((newList) {
@@ -46,7 +45,7 @@ class SunnyObservableList<V> extends ObservableList<V>
           print(e);
         }
       }).listen(
-        (_) {} as void Function(Null)?,
+        (_) {},
         cancelOnError: false,
       );
       disposers.add(subscription.cancel);
@@ -56,7 +55,6 @@ class SunnyObservableList<V> extends ObservableList<V>
   SunnyObservableList.ofVStream(ValueStream<Iterable<V>> stream,
       {this.diffEquality = const DiffEquality(), String? debugLabel})
       : debugLabel = debugLabel ?? "stream[${V.name}]",
-        assert(diffEquality != null),
         super() {
     this.sync(stream.get()).then((_) {
       final subscription = stream.listen(
@@ -80,20 +78,15 @@ class SunnyObservableList<V> extends ObservableList<V>
   }
 
   void subscribeTo(Stream<Iterable<V>> other, {bool sync = false}) {
-    disposers.add(other
-        .asyncMap((items) async {
-          await this.sync(items, async: sync != true);
-        })
-        .listen(
-            (_) {
-              // nothing to do
-            } as void Function(Null)?,
-            cancelOnError: false)
-        .cancel);
+    disposers.add(other.asyncMap((items) async {
+      await this.sync(items, async: sync != true);
+    }).listen((_) {
+      // nothing to do
+    }, cancelOnError: false).cancel);
   }
 
   @override
-  String get loggerName => debugLabel ?? super.loggerName;
+  String get loggerName => debugLabel;
 
   String debugLabel;
 
@@ -115,9 +108,7 @@ class SunnyObservableList<V> extends ObservableList<V>
 
   @override
   void registerDisposer(EmptyCallback callback) {
-    if (callback != null) {
-      disposers.add(callback);
-    }
+    disposers.add(callback);
   }
 
   Future dispose() async {
@@ -173,7 +164,9 @@ class SunnyObservableList<V> extends ObservableList<V>
     try {
       if (change is DeleteDiff<V>) {
         for (int d = 0; d < change.delete.size; d++) {
-          this.safeRemove(change.delete.index!);
+          if (change.delete.index! < this.length) {
+            this.removeAt(change.delete.index!);
+          }
         }
       } else if (change is InsertDiff<V>) {
         var start = change.index!;

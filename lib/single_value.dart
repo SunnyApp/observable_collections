@@ -241,8 +241,7 @@ abstract class ProgressTrackerBase extends StateCounter with Store {
   }
 
   ProgressTrackerBase._(num total, [String? name])
-      : assert(total != null, total >= 0),
-        _total = total.toDouble(),
+      : _total = total.toDouble(),
         super(name);
 
   /// Returns a percent completed, between 0 and 100
