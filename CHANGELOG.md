@@ -1,3 +1,6 @@
+## [0.7.0+2]
+ * Fixing analyzer
+
 ## [0.6.1-nullsafety.8]
  * Updated deps
 
