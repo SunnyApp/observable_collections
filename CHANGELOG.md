@@ -1,3 +1,6 @@
+## [0.7.0+3]
+ * Fixing cast
+
 ## [0.7.0+2]
  * Fixing analyzer
 
