@@ -35,8 +35,7 @@ class ObservableMap<K, V>
       ReactiveContext? context})
       : _context = context ?? mainContext,
         _atom = _observableMapAtom<K, V>(context),
-        _map = SplayTreeMap.from(
-            other, compare as int Function(K?, K?)?, isValidKey);
+        _map = SplayTreeMap.from(other, compare as int Function(K?, K?)?, isValidKey);
 
   ObservableMap._wrap(this._context, this._map, this._atom);
 
@@ -46,11 +45,9 @@ class ObservableMap<K, V>
 
   Listeners<MapChange<K, V>>? _listenersField;
 
-  Listeners<MapChange<K, V>> get _listeners =>
-      _listenersField ??= Listeners(_context);
+  Listeners<MapChange<K, V>> get _listeners => _listenersField ??= Listeners(_context);
 
-  bool get _hasListeners =>
-      _listenersField != null && _listenersField!.hasHandlers;
+  bool get _hasListeners => _listenersField != null && _listenersField!.hasHandlers;
 
   @override
   V? operator [](Object? key) {
@@ -119,8 +116,7 @@ class ObservableMap<K, V>
   Iterable<K?> get keys => MapKeysIterable(_map.keys, _atom);
 
   @override
-  Map<RK, RV> cast<RK, RV>() =>
-      ObservableMap<RK, RV>._wrap(_context, super.cast(), _atom).cast();
+  Map<RK, RV> cast<RK, RV>() => ObservableMap<RK, RV>._wrap(_context, super.cast<RK, RV>(), _atom) as Map<RK, RV>;
 
   @override
   V? remove(Object? key) {
@@ -215,8 +211,7 @@ class ObservableMap<K, V>
   }
 }
 
-ObservableMap<K, V> wrapInObservableMap<K, V>(Atom atom, Map<K, V> map) =>
-    ObservableMap._wrap(mainContext, map, atom);
+ObservableMap<K, V> wrapInObservableMap<K, V>(Atom atom, Map<K, V> map) => ObservableMap._wrap(mainContext, map, atom);
 
 typedef MapChangeListener<K, V> = void Function(MapChange<K, V>);
 
