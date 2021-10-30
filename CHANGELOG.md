@@ -1,3 +1,6 @@
+## [0.7.0+4]
+ * Updating deps
+
 ## [0.7.0+3]
  * Fixing cast
 
