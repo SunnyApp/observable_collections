@@ -3,7 +3,7 @@ version: 0.7.0+4
 homepage: https://github.com/SunnyApp/observable_collections
 description: Collections that publish and track changes
 environment: 
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.13.0 <3.0.0'
 dependencies: 
   mobx: ^2.0.5
   logging: ^1.0.2
