@@ -1,5 +1,5 @@
 name: observable_collections
-version: 0.7.0+4
+version: 0.7.0+5
 homepage: https://github.com/SunnyApp/observable_collections
 description: Collections that publish and track changes
 environment: 
