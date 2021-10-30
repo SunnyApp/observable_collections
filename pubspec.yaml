@@ -5,12 +5,12 @@ description: Collections that publish and track changes
 environment: 
   sdk: '>=2.12.0 <3.0.0'
 dependencies: 
-  mobx: ^2.0.1
-  logging: ^1.0.1
-  dartxx: ^0.5.0+2
+  mobx: ^2.0.5
+  logging: ^1.0.2
+  dartxx: ^0.5.3+2
   collection_diff: ^2.0.3+6
   collection_diff_worker: ^0.5.5+7
-  sunny_dart: ^0.10.0+1
+  sunny_dart: ^0.11.0+5
   flutter: 
     sdk: flutter
 dev_dependencies: 
