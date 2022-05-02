@@ -1,5 +1,5 @@
 name: observable_collections
-version: 0.7.0+5
+version: 0.7.1-dev.0
 homepage: https://github.com/SunnyApp/observable_collections
 description: Collections that publish and track changes
 environment: 
@@ -7,7 +7,7 @@ environment:
 dependencies: 
   mobx: ^2.0.7
   logging: ^1.0.2
-  dartxx: ^0.5.4
+  dartxx: ^0.5.5-dev.0
   collection_diff: ^2.0.3+6
   collection_diff_worker: ^0.5.5+7
   sunny_dart: ^0.11.0+8

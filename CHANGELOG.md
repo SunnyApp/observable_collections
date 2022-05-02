@@ -1,3 +1,7 @@
+## 0.7.1-dev.0
+
+ - **FEAT**: bumping version.
+
 ## [0.7.0+5]
  * Updated deps
 

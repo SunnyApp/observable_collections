@@ -1,0 +1,6 @@
+# melos_managed_dependency_overrides: dartxx,sunny_dart
+dependency_overrides:
+  dartxx:
+    path: ../dartxx
+  sunny_dart:
+    path: ../sunny_dart
