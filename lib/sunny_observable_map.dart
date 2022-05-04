@@ -1,13 +1,10 @@
 import 'dart:async';
 
-import 'package:collection_diff/collection_diff.dart';
 import 'package:collection_diff/map_diff.dart';
 import 'package:collection_diff_worker/collection_diff_worker.dart';
 import 'package:logging/logging.dart';
 import 'package:mobx/mobx.dart' hide ObservableMap, MapChange;
 import 'package:sunny_dart/sunny_dart.dart';
-import 'package:dartxx/dartxx.dart';
-import 'package:sunny_dart/typedefs.dart';
 
 import 'empty_callback.dart';
 import 'observable_extensions.dart';
