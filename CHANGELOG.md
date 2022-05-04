@@ -1,3 +1,37 @@
+## 0.7.1
+
+ - Graduate package to a stable release. See pre-releases prior to this version for changelog entries.
+
+## 0.7.1-dev.6
+
+ - **FEAT**: Cleanup for melos release.
+ - **FEAT**: bumping version.
+
+## 0.7.1-dev.5
+
+ - **FEAT**: Cleanup for melos release.
+ - **FEAT**: bumping version.
+
+## 0.7.1-dev.4
+
+ - **FEAT**: Cleanup for melos release.
+ - **FEAT**: bumping version.
+
+## 0.7.1-dev.3
+
+ - **FEAT**: Cleanup for melos release.
+ - **FEAT**: bumping version.
+
+## 0.7.1-dev.2
+
+ - **FEAT**: Cleanup for melos release.
+ - **FEAT**: bumping version.
+
+## 0.7.1-dev.1
+
+ - **FEAT**: Cleanup for melos release.
+ - **FEAT**: bumping version.
+
 ## 0.7.1-dev.0
 
  - **FEAT**: bumping version.
