@@ -7,10 +7,14 @@ environment:
 dependencies: 
   mobx: ^2.0.7
   logging: ^1.0.2
-  collection_diff: ^2.0.3+6
-  collection_diff_worker: ^0.5.5+7
-  dartxx: ^0.5.5
-  sunny_dart: ^0.11.1
+  collection_diff_worker: 
+    path: /Users/ericm/sunny/player_rank/packages/collection_diff_worker
+  collection_diff: 
+    path: /Users/ericm/sunny/player_rank/packages/collection_diff
+  dartxx: 
+    path: /Users/ericm/sunny/player_rank/packages/dartxx
+  sunny_dart: 
+    path: /Users/ericm/sunny/player_rank/packages/sunny_dart
   flutter: 
     sdk: flutter
 dev_dependencies: 
