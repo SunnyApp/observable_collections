@@ -3,24 +3,24 @@ version: 0.7.1
 homepage: https://github.com/SunnyApp/observable_collections
 description: Collections that publish and track changes
 environment: 
-  sdk: '>=2.16.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 dependencies: 
-  mobx: ^2.0.7
+  mobx: ^2.0.7+5
   logging: ^1.0.2
   collection_diff_worker: 
-    path: /Users/ericm/sunny/player_rank/packages/collection_diff_worker
+    path: /Users/ericm/sunny/trippi_plugins/collection_diff_worker
   collection_diff: 
-    path: /Users/ericm/sunny/player_rank/packages/collection_diff
+    path: /Users/ericm/sunny/trippi_plugins/collection_diff
   dartxx: 
-    path: /Users/ericm/sunny/player_rank/packages/dartxx
+    path: /Users/ericm/sunny/trippi_plugins/dartxx
   sunny_dart: 
-    path: /Users/ericm/sunny/player_rank/packages/sunny_dart
+    path: /Users/ericm/sunny/trippi_plugins/sunny_dart
   flutter: 
     sdk: flutter
 dev_dependencies: 
-  build_runner: ^2.1.10
+  build_runner: ^2.3.2
   build: ^2.3.0
-  mobx_codegen: ^2.0.6
+  mobx_codegen: ^2.0.7
   flutter_test: 
     sdk: flutter
 flutter: null
