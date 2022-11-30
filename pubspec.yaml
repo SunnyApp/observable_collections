@@ -8,13 +8,21 @@ dependencies:
   mobx: ^2.0.7+5
   logging: ^1.0.2
   collection_diff_worker: 
-    path: /Users/ericm/sunny/trippi_plugins/collection_diff_worker
+    git: 
+      url: git@github.com:SunnyApp/collection_diff_worker
+      ref: trippi_app
   collection_diff: 
-    path: /Users/ericm/sunny/trippi_plugins/collection_diff
+    git: 
+      url: git@github.com:SunnyApp/collection_diff
+      ref: trippi_app
   dartxx: 
-    path: /Users/ericm/sunny/trippi_plugins/dartxx
+    git: 
+      url: git@github.com:ericmartineau/dartxx.git
+      ref: trippi_app
   sunny_dart: 
-    path: /Users/ericm/sunny/trippi_plugins/sunny_dart
+    git: 
+      url: git@github.com:SunnyApp/sunny_dart
+      ref: trippi_app
   flutter: 
     sdk: flutter
 dev_dependencies: 
