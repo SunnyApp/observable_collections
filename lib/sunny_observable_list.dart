@@ -165,18 +165,18 @@ class SunnyObservableList<V> extends ObservableList<V>
       if (change is DeleteDiff<V>) {
         for (int d = 0; d < change.delete.size; d++) {
           if (change.delete.index! < this.length) {
-            this.removeAt(change.delete.index!);
+            super.removeAt(change.delete.index!);
           }
         }
       } else if (change is InsertDiff<V>) {
         var start = change.index!;
         for (final item in change.items) {
-          this.insert(start++, item);
+          super.insert(start++, item);
         }
       } else if (change is ReplaceDiff<V>) {
         var start = change.index;
         for (final item in change.items) {
-          this[start!] = item;
+          super[start!] = item;
         }
       }
     } catch (e, stack) {
