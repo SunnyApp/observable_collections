@@ -121,6 +121,6 @@ extension MapDiffsExt<K, V> on MapDiffs<K?, V> {
   }
 
   void change(K? key, V? newItem) {
-    add(MapDiff.change(args, key, newItem, args.original[key]));
+    add(MapDiff.change(args, key!, newItem, args.original[key]).recast<K, V>());
   }
 }
